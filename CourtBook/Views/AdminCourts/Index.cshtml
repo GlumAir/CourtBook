@@ -1,0 +1,250 @@
+﻿@model List<CourtBook.Models.Court>
+@{
+    ViewData["Title"] = "Courts";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var selectedSport = ViewBag.SelectedSport as string;
+}
+
+<!-- Header -->
+<div class="d-flex align-items-start justify-content-between mb-4">
+    <div>
+        <h1 class="fw-bold mb-1" style="color: var(--foreground); font-size: 1.875rem;">
+            Courts
+        </h1>
+        <p class="mb-0" style="color: var(--muted-foreground);">
+            Manage all badminton and pickleball courts.
+        </p>
+    </div>
+    <a asp-controller="AdminCourts" asp-action="Create"
+           class="btn btn-primary d-inline-flex align-items-center gap-2 px-4 py-2 rounded-3 fw-semibold"
+           style="font-size: 0.875rem;">
+        <i class="bi bi-plus-lg"></i>
+        Add Court
+    </a>
+</div>
+
+<!-- Filter Pills -->
+<div class="d-flex gap-2 flex-wrap mb-4">
+    <a asp-controller="AdminCourts" asp-action="Index"
+           class="filter-pill @(string.IsNullOrEmpty(selectedSport) ? "active" : "")">
+        All
+    </a>
+    <a asp-controller="AdminCourts" asp-action="Index" asp-route-sport="Badminton"
+           class="filter-pill @(selectedSport == "Badminton" ? "active" : "")">
+        Badminton
+    </a>
+    <a asp-controller="AdminCourts" asp-action="Index" asp-route-sport="Pickleball"
+           class="filter-pill @(selectedSport == "Pickleball" ? "active" : "")">
+        Pickleball
+    </a>
+</div>
+
+<!-- Table -->
+<div class="rounded-3 border overflow-hidden"
+     style="background-color: var(--card); border-color: var(--border) !important;">
+
+    @if (!Model.Any())
+    {
+        <div class="p-5 text-center">
+            <div class="mb-3" style="color: var(--muted-foreground); font-size: 3rem; opacity: 0.4;">
+                <i class="bi bi-building-x"></i>
+            </div>
+            <h5 class="fw-semibold mb-2" style="color: var(--foreground);">
+                No courts found
+            </h5>
+            <p class="mb-0" style="color: var(--muted-foreground); font-size: 0.875rem;">
+                No courts match the selected filter.
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-3">Court Name</th>
+                        <th class="px-4 py-3">Sport Type</th>
+                        <th class="px-4 py-3">Operating Hours</th>
+                        <th class="px-4 py-3">Price / Hr</th>
+                        <th class="px-4 py-3">Status</th>
+                        <th class="px-4 py-3">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var court in Model)
+                    {
+                        <tr>
+                            <td class="px-4 py-3 fw-medium"
+                                style="color: var(--foreground); font-size: 0.875rem;">
+                                @court.Name
+                            </td>
+                            <td class="px-4 py-3">
+                                @if (court.SportType == CourtBook.Models.SportType.Badminton)
+                                {
+                                    <span class="badge-badminton">Badminton</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-pickleball">Pickleball</span>
+                                }
+                            </td>
+                            <td class="px-4 py-3"
+                                style="color: var(--muted-foreground); font-size: 0.875rem;">
+                                @court.OperatingHours
+                            </td>
+                            <td class="px-4 py-3 fw-medium"
+                                style="color: var(--foreground); font-size: 0.875rem;">
+                                &#8369;@court.PricePerHour.ToString("N0")
+                            </td>
+                            <td class="px-4 py-3">
+                                @if (court.IsActive)
+                                {
+                                    <span class="badge-active">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-inactive">Inactive</span>
+                                }
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="d-flex align-items-center gap-2">
+
+                                    <!-- Edit Button -->
+                                    <a asp-controller="AdminCourts"
+                                           asp-action="Edit"
+                                           asp-route-id="@court.Id"
+                                           class="d-inline-flex align-items-center gap-1 px-3 py-1 rounded-2 fw-medium text-decoration-none"
+                                           style="background-color: var(--secondary); border: 1px solid var(--border); color: var(--foreground); font-size: 0.75rem; transition: background-color 0.15s ease;"
+                                           onmouseover="this.style.backgroundColor='var(--border)'"
+                                           onmouseout="this.style.backgroundColor='var(--secondary)'">
+                                        <i class="bi bi-pencil" style="font-size: 0.75rem;"></i>
+                                        Edit
+                                    </a>
+
+                                    <!-- Deactivate / Activate Button -->
+                                    @if (court.IsActive)
+                                    {
+                                        <button type="button"
+                                                class="btn d-inline-flex align-items-center gap-1 px-3 py-1 rounded-2 fw-medium"
+                                                style="background-color: rgba(239,68,68,0.10); border: 1px solid rgba(239,68,68,0.3); color: #FCA5A5; font-size: 0.75rem;"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#toggleModal"
+                                                data-court-id="@court.Id"
+                                                data-court-name="@court.Name"
+                                                data-action="deactivate">
+                                            <i class="bi bi-power" style="font-size: 0.75rem;"></i>
+                                            Deactivate
+                                        </button>
+                                    }
+                                    else
+                                    {
+                                        <button type="button"
+                                                class="btn d-inline-flex align-items-center gap-1 px-3 py-1 rounded-2 fw-medium"
+                                                style="background-color: rgba(22,163,74,0.10); border: 1px solid rgba(22,163,74,0.3); color: #4ADE80; font-size: 0.75rem;"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#toggleModal"
+                                                data-court-id="@court.Id"
+                                                data-court-name="@court.Name"
+                                                data-action="activate">
+                                            <i class="bi bi-power" style="font-size: 0.75rem;"></i>
+                                            Activate
+                                        </button>
+                                    }
+
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<!-- Toggle Court Status Modal -->
+<div class="modal fade" id="toggleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom"
+                 style="border-color: var(--border) !important;">
+                <h5 class="modal-title fw-semibold" id="toggleModalTitle"
+                    style="color: var(--foreground);">
+                </h5>
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+            <div class="modal-body py-4">
+                <div class="d-flex align-items-center justify-content-center mb-4">
+                    <div class="d-flex align-items-center justify-content-center rounded-circle"
+                         id="toggleModalIcon"
+                         style="width: 56px; height: 56px;">
+                        <i class="bi bi-power" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+                <p class="text-center mb-0" id="toggleModalDescription"
+                       style="color: var(--muted-foreground); font-size: 0.9rem;">
+                </p>
+            </div>
+            <div class="modal-footer border-top"
+                 style="border-color: var(--border) !important;">
+                <button type="button"
+                        class="btn btn-secondary px-4"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+                <form id="toggleForm" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="toggleCourtId" />
+                    <button type="submit"
+                            id="toggleConfirmBtn"
+                            class="btn px-4 fw-semibold">
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const toggleModal = document.getElementById('toggleModal');
+
+        toggleModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const courtId = button.getAttribute('data-court-id');
+            const courtName = button.getAttribute('data-court-name');
+            const action = button.getAttribute('data-action');
+
+            document.getElementById('toggleCourtId').value = courtId;
+
+            const title = document.getElementById('toggleModalTitle');
+            const description = document.getElementById('toggleModalDescription');
+            const iconWrap = document.getElementById('toggleModalIcon');
+            const confirmBtn = document.getElementById('toggleConfirmBtn');
+            const form = document.getElementById('toggleForm');
+
+            if (action === 'deactivate') {
+                title.textContent = 'Deactivate Court';
+                description.textContent =
+                    `Are you sure you want to deactivate "${courtName}"? It will no longer be visible to users.`;
+                iconWrap.style.backgroundColor = 'rgba(239,68,68,0.15)';
+                iconWrap.style.color = '#EF4444';
+                confirmBtn.textContent = 'Deactivate';
+                confirmBtn.className = 'btn btn-danger px-4 fw-semibold';
+                form.action = '@Url.Action("Deactivate", "AdminCourts")';
+            } else {
+                title.textContent = 'Activate Court';
+                description.textContent =
+                    `Are you sure you want to activate "${courtName}"? It will become visible to users.`;
+                iconWrap.style.backgroundColor = 'rgba(22,163,74,0.15)';
+                iconWrap.style.color = '#16A34A';
+                confirmBtn.textContent = 'Activate';
+                confirmBtn.className = 'btn btn-primary px-4 fw-semibold';
+                form.action = '@Url.Action("Activate", "AdminCourts")';
+            }
+        });
+    </script>
+}

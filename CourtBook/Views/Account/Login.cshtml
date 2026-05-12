@@ -1,0 +1,272 @@
+﻿@model CourtBook.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Login";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - CourtBook</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    <style>
+            .auth-card {
+                background-color: var(--card);
+                border: 1px solid var(--border);
+                border-radius: 1rem;
+                padding: 2rem;
+                box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+            }
+
+            .auth-input {
+                width: 100%;
+                padding: 0.625rem 1rem;
+                background-color: var(--input-background);
+                border: 1px solid var(--border);
+                border-radius: 0.75rem;
+                color: var(--foreground);
+                font-size: 1rem;
+                outline: none;
+                transition: border-color 0.15s ease, box-shadow 0.15s ease;
+            }
+
+                .auth-input:focus {
+                    border-color: var(--ring);
+                    box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2);
+                }
+
+                .auth-input::placeholder {
+                    color: var(--muted-foreground);
+                }
+
+                .auth-input.is-invalid {
+                    border-color: var(--destructive);
+                }
+
+            .auth-input-wrapper {
+                position: relative;
+            }
+
+            .password-toggle {
+                position: absolute;
+                right: 0.75rem;
+                top: 50%;
+                transform: translateY(-50%);
+                background: none;
+                border: none;
+                color: var(--muted-foreground);
+                cursor: pointer;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: color 0.15s ease;
+            }
+
+                .password-toggle:hover {
+                    color: var(--foreground);
+                }
+
+            .auth-input.has-toggle {
+                padding-right: 2.5rem;
+            }
+
+            .error-alert {
+                padding: 0.75rem 1rem;
+                border-radius: 0.5rem;
+                background-color: rgba(239, 68, 68, 0.15);
+                border: 1px solid rgba(239, 68, 68, 0.3);
+                color: #FCA5A5;
+                font-size: 0.875rem;
+            }
+
+            .field-error {
+                color: var(--destructive);
+                font-size: 0.75rem;
+                margin-top: 0.25rem;
+            }
+
+            .demo-card {
+                background-color: rgba(30, 41, 59, 0.6);
+                border: 1px solid rgba(71, 85, 105, 0.5);
+                border-radius: 0.75rem;
+                padding: 1rem;
+                margin-top: 1.5rem;
+            }
+
+            .demo-account-btn {
+                width: 100%;
+                text-align: left;
+                padding: 0.5rem 0.75rem;
+                border-radius: 0.5rem;
+                background-color: var(--secondary);
+                border: none;
+                transition: background-color 0.15s ease;
+                cursor: pointer;
+            }
+
+                .demo-account-btn:hover {
+                    background-color: var(--border);
+                }
+    </style>
+</head>
+<body style="background-color: var(--background);">
+
+    <div class="min-vh-100 d-flex align-items-center justify-content-center px-3 py-5">
+        <div class="w-100" style="max-width: 448px;">
+
+            <!-- Logo -->
+            <div class="d-flex flex-column align-items-center mb-4">
+                <div class="d-flex align-items-center justify-content-center rounded-3 p-3 mb-3"
+                     style="background-color: var(--primary);">
+                    <i class="bi bi-trophy-fill text-white" style="font-size: 1.5rem;"></i>
+                </div>
+                <h1 class="fw-bold mb-1" style="color: var(--foreground); font-size: 1.5rem;">CourtBook</h1>
+                <p class="mb-0" style="color: var(--muted-foreground); font-size: 0.875rem;">
+                    Sign in to your account
+                </p>
+            </div>
+
+            <!-- Card -->
+            <div class="auth-card">
+                <form asp-action="Login" asp-controller="Account" method="post">
+                    @Html.AntiForgeryToken()
+
+                    <!-- General Error -->
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div asp-validation-summary="ModelOnly" class="error-alert mb-4"></div>
+                    }
+
+                    <!-- Email -->
+                    <div class="mb-4">
+                        <label asp-for="Email"
+                               class="form-label fw-medium mb-2"
+                               style="color: var(--foreground); font-size: 0.875rem;">
+                            Email
+                        </label>
+                        <input asp-for="Email"
+                               type="email"
+                               placeholder="you@example.com"
+                               class="auth-input @(ViewData.ModelState["Email"]?.Errors.Count > 0 ? "is-invalid" : "")" />
+                        <span asp-validation-for="Email" class="field-error d-block"></span>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="mb-4">
+                        <label asp-for="Password"
+                               class="form-label fw-medium mb-2"
+                               style="color: var(--foreground); font-size: 0.875rem;">
+                            Password
+                        </label>
+                        <div class="auth-input-wrapper">
+                            <input asp-for="Password"
+                                   type="password"
+                                   id="passwordInput"
+                                   placeholder="••••••••"
+                                   class="auth-input has-toggle @(ViewData.ModelState["Password"]?.Errors.Count > 0 ? "is-invalid" : "")" />
+                            <button type="button"
+                                    class="password-toggle"
+                                    id="togglePassword"
+                                    aria-label="Toggle password visibility">
+                                <i class="bi bi-eye" id="toggleIcon" style="font-size: 1rem;"></i>
+                            </button>
+                        </div>
+                        <span asp-validation-for="Password" class="field-error d-block"></span>
+                    </div>
+
+                    <!-- Remember Me -->
+                    <div class="mb-4 d-flex align-items-center gap-2">
+                        <input asp-for="RememberMe"
+                               type="checkbox"
+                               class="form-check-input"
+                               id="rememberMe"
+                               style="background-color: var(--secondary); border-color: var(--border);" />
+                        <label class="form-check-label"
+                               for="rememberMe"
+                               style="color: var(--muted-foreground); font-size: 0.875rem;">
+                            Remember me
+                        </label>
+                    </div>
+
+                    <!-- Submit -->
+                    <button type="submit"
+                            class="btn btn-primary w-100 py-3 fw-semibold rounded-3"
+                            style="font-size: 1rem;">
+                        Login
+                    </button>
+                </form>
+
+                <!-- Register Link -->
+                <p class="text-center mt-4 mb-0" style="color: var(--muted-foreground); font-size: 0.875rem;">
+                    Don't have an account?
+                    <a asp-controller="Account" asp-action="Register"
+                           class="fw-medium"
+                           style="color: #2563EB;">
+                        Register
+                    </a>
+                </p>
+            </div>
+
+            <!-- Demo Accounts -->
+            <div class="demo-card">
+                <p class="fw-semibold text-uppercase mb-3"
+                       style="color: var(--muted-foreground); font-size: 0.7rem; letter-spacing: 0.1em;">
+                    Demo Accounts
+                </p>
+                <div class="d-flex flex-column gap-2">
+                    <button type="button"
+                            class="demo-account-btn"
+                            onclick="fillCredentials('admin@courtbook.com', 'Admin@123456')">
+                        <p class="mb-0 fw-medium" style="color: var(--foreground); font-size: 0.75rem;">
+                            Admin Account
+                        </p>
+                        <p class="mb-0" style="color: var(--muted-foreground); font-size: 0.75rem;">
+                            admin@courtbook.com / Admin@123456
+                        </p>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Validation Scripts -->
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Password toggle
+        const toggleBtn = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('passwordInput');
+        const toggleIcon = document.getElementById('toggleIcon');
+
+        toggleBtn.addEventListener('click', function () {
+        const isPassword = passwordInput.type === 'password';
+        passwordInput.type = isPassword ? 'text' : 'password';
+        toggleIcon.className = isPassword ? 'bi bi-eye-slash' : 'bi bi-eye';
+        toggleIcon.style.fontSize = '1rem';
+        });
+
+        // Demo account fill
+        function fillCredentials(email, password) {
+        document.getElementById('Email').value = email;
+        document.getElementById('Password').value = password;
+        }
+    </script>
+
+</body>
+</html>

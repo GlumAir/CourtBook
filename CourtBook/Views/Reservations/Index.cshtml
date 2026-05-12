@@ -1,0 +1,213 @@
+﻿@model CourtBook.ViewModels.MyReservationsViewModel
+@{
+    ViewData["Title"] = "My Reservations";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="container-xl py-4">
+
+    <!-- Header -->
+    <div class="page-header mb-4">
+        <h1 class="fw-bold" style="color: var(--foreground); font-size: 1.875rem;">
+            My Reservations
+        </h1>
+        <p class="page-subtitle">Manage your court bookings.</p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-container mb-4">
+        <a asp-controller="Reservations" asp-action="Index" asp-route-tab="upcoming"
+               class="tab-pill @(Model.ActiveTab == "upcoming" ? "active" : "")">
+            Upcoming (@Model.Upcoming.Count)
+        </a>
+        <a asp-controller="Reservations" asp-action="Index" asp-route-tab="past"
+               class="tab-pill @(Model.ActiveTab == "past" ? "active" : "")">
+            Past (@Model.Past.Count)
+        </a>
+    </div>
+
+    <!-- Reservation List -->
+    @{
+        var displayed = Model.ActiveTab == "upcoming" ? Model.Upcoming : Model.Past;
+        var isUpcoming = Model.ActiveTab == "upcoming";
+    }
+
+    @if (!displayed.Any())
+    {
+        <!-- Empty State -->
+        <div class="rounded-3 border p-5 text-center"
+             style="background-color: var(--card); border-color: var(--border) !important;">
+            <div class="mb-3" style="color: var(--muted-foreground); font-size: 3rem; opacity: 0.4;">
+                <i class="bi bi-calendar-x"></i>
+            </div>
+            <h5 class="fw-semibold mb-2" style="color: var(--foreground);">
+                @(isUpcoming ? "No upcoming reservations" : "No past reservations")
+            </h5>
+            <p class="mb-4" style="color: var(--muted-foreground); font-size: 0.875rem;">
+                @(isUpcoming
+                    ? "Book a court to see your reservations here."
+                    : "Your completed and cancelled reservations will appear here.")
+            </p>
+            @if (isUpcoming)
+            {
+                <a asp-controller="Courts" asp-action="Index"
+                       class="d-inline-flex align-items-center gap-2 px-4 py-2 rounded-3 fw-semibold text-decoration-none"
+                       style="background-color: var(--primary); color: #ffffff; font-size: 0.875rem;">
+                    Browse Courts
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="d-flex flex-column gap-3">
+            @foreach (var res in displayed)
+            {
+                <div class="rounded-3 border p-4 d-flex flex-column flex-sm-row align-items-sm-center gap-3"
+                     style="background-color: var(--card); border-color: var(--border) !important;">
+
+                    <!-- Info -->
+                    <div class="flex-grow-1 overflow-hidden">
+
+                        <!-- Badges -->
+                        <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                            @if (res.SportType == CourtBook.Models.SportType.Badminton)
+                            {
+                                <span class="badge-badminton">Badminton</span>
+                            }
+                            else
+                            {
+                                <span class="badge-pickleball">Pickleball</span>
+                            }
+
+                            @switch (res.Status)
+                            {
+                                case CourtBook.Models.ReservationStatus.Confirmed:
+                                    <span class="badge-confirmed">Confirmed</span>
+                                    break;
+                                case CourtBook.Models.ReservationStatus.Cancelled:
+                                    <span class="badge-cancelled">Cancelled</span>
+                                    break;
+                                case CourtBook.Models.ReservationStatus.Completed:
+                                    <span class="badge-completed">Completed</span>
+                                    break;
+                            }
+                        </div>
+
+                        <!-- Court Name -->
+                        <h3 class="fw-semibold mb-2"
+                            style="color: var(--foreground); font-size: 1rem;">
+                            @res.CourtName
+                        </h3>
+
+                        <!-- Details -->
+                        <div class="d-flex flex-wrap gap-3"
+                             style="font-size: 0.875rem; color: var(--muted-foreground);">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-calendar3" style="color: var(--border);"></i>
+                                @res.Date.ToString("ddd, MMM d, yyyy")
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-clock" style="color: var(--border);"></i>
+                                @res.DisplayStart – @res.DisplayEnd
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-currency-exchange" style="color: var(--border);"></i>
+                                &#8369;@res.TotalAmount.ToString("N0")
+                                @if (res.PaymentStatus == CourtBook.Models.PaymentStatus.Paid)
+                                {
+                                    <span class="badge-paid">Paid</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-unpaid">Unpaid</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cancel Button (upcoming only) -->
+                    @if (isUpcoming)
+                    {
+                        <div class="flex-shrink-0">
+                            <button type="button"
+                                    class="btn px-4 py-2 rounded-3 fw-semibold"
+                                    style="background-color: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #FCA5A5; font-size: 0.875rem;"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#cancelModal"
+                                    data-reservation-id="@res.Id">
+                                Cancel
+                            </button>
+                        </div>
+                    }
+
+                </div>
+            }
+        </div>
+    }
+
+</div>
+
+<!-- Cancel Confirmation Modal -->
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom"
+                 style="border-color: var(--border) !important;">
+                <h5 class="modal-title fw-semibold" style="color: var(--foreground);">
+                    Cancel Reservation
+                </h5>
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+            <div class="modal-body py-4">
+                <div class="d-flex align-items-center justify-content-center mb-4">
+                    <div class="d-flex align-items-center justify-content-center rounded-circle"
+                         style="width: 56px; height: 56px; background-color: rgba(239,68,68,0.15);">
+                        <i class="bi bi-exclamation-triangle"
+                           style="color: var(--destructive); font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+                <p class="text-center mb-0"
+                       style="color: var(--muted-foreground); font-size: 0.9rem;">
+                    Are you sure you want to cancel this reservation?
+                    This action cannot be undone.
+                </p>
+            </div>
+            <div class="modal-footer border-top"
+                 style="border-color: var(--border) !important;">
+                <button type="button"
+                        class="btn btn-secondary px-4"
+                        data-bs-dismiss="modal">
+                    Keep Reservation
+                </button>
+                <form asp-controller="Reservations"
+                      asp-action="Cancel"
+                      method="post"
+                      id="cancelForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="cancelReservationId" />
+                    <button type="submit"
+                            class="btn btn-danger px-4 fw-semibold">
+                        Confirm Cancellation
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Pass the reservation ID to the modal when Cancel is clicked
+        const cancelModal = document.getElementById('cancelModal');
+        cancelModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const reservationId = button.getAttribute('data-reservation-id');
+            document.getElementById('cancelReservationId').value = reservationId;
+        });
+    </script>
+}

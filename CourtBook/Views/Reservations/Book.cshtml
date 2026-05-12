@@ -1,0 +1,390 @@
+﻿@model CourtBook.ViewModels.BookCourtViewModel
+@{
+    ViewData["Title"] = "Book a Court";
+    Layout = "~/Views/Shared/_UserLayout.cshtml";
+}
+
+<div class="container-xl py-4">
+
+    <!-- Header -->
+    <div class="mb-4">
+        <a asp-controller="Courts" asp-action="Index"
+               class="d-inline-flex align-items-center gap-2 mb-3 text-decoration-none"
+               style="color: var(--muted-foreground); font-size: 0.875rem; transition: color 0.15s ease;"
+               onmouseover="this.style.color='var(--foreground)'"
+               onmouseout="this.style.color='var(--muted-foreground)'">
+            <i class="bi bi-chevron-left"></i>
+            Back to Courts
+        </a>
+        <h1 class="fw-bold mb-1" style="color: var(--foreground); font-size: 1.875rem;">
+            Book a Court
+        </h1>
+        <p class="mb-0" style="color: var(--muted-foreground);">@Model.CourtName</p>
+    </div>
+
+    <!-- Validation Summary -->
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert mb-4"
+             style="background-color: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #FCA5A5; border-radius: 0.5rem;">
+            <!-- Show both model-level and field-level errors so binding/parsing errors are visible -->
+            <div asp-validation-summary="All"></div>
+        </div>
+    }
+
+    <div class="row g-4">
+
+        <!-- Left Column: Date + Time Slots -->
+        <div class="col-12 col-lg-7">
+
+            <!-- Date Picker Card -->
+            <div class="rounded-3 border p-4 mb-4"
+                 style="background-color: var(--card); border-color: var(--border) !important;">
+                <h2 class="fw-semibold d-flex align-items-center gap-2 mb-4"
+                    style="color: var(--foreground); font-size: 1.125rem;">
+                    <i class="bi bi-calendar3" style="color: var(--primary);"></i>
+                    Select a Date
+                </h2>
+
+                <form method="get"
+                      asp-controller="Reservations"
+                      asp-action="Book"
+                      id="dateForm">
+                    <input type="hidden" name="courtId" value="@Model.CourtId" />
+                    <input type="date"
+                           name="date"
+                           id="datePicker"
+                           value="@Model.SelectedDate?.ToString("yyyy-MM-dd")"
+                           min="@DateTime.Today.ToString("yyyy-MM-dd")"
+                           class="form-control"
+                           style="background-color: var(--input-background); border-color: var(--border); color: var(--foreground); border-radius: 0.75rem; padding: 0.625rem 1rem; max-width: 280px;"
+                           onchange="this.form.submit()" />
+                </form>
+            </div>
+
+            <!-- Time Slots Card -->
+            @if (Model.SelectedDate.HasValue && Model.TimeSlots.Any())
+            {
+                <div class="rounded-3 border p-4"
+                     style="background-color: var(--card); border-color: var(--border) !important;">
+                    <h2 class="fw-semibold d-flex align-items-center gap-2 mb-1"
+                        style="color: var(--foreground); font-size: 1.125rem;">
+                        <i class="bi bi-clock" style="color: var(--primary);"></i>
+                        Select a Time Slot
+                    </h2>
+                    <p class="mb-4" style="color: var(--muted-foreground); font-size: 0.875rem;">
+                        @Model.SelectedDate?.ToString("dddd, MMMM d, yyyy")
+                    </p>
+
+                    <div class="row g-3 mb-4">
+                        @foreach (var slot in Model.TimeSlots)
+                        {
+                            <div class="col-6 col-sm-4 col-md-3">
+                                @if (slot.IsAvailable)
+                                {
+                                    <button type="button"
+                                            class="time-slot w-100 slot-btn"
+                                            data-start="@slot.StartTime"
+                                            data-end="@slot.EndTime"
+                                            data-display-start="@slot.DisplayStart"
+                                            data-display-end="@slot.DisplayEnd"
+                                            onclick="selectSlot(this)">
+                                        @slot.DisplayStart
+                                        <span class="d-block" style="font-size: 0.75rem; opacity: 0.75;">
+                                            to @slot.DisplayEnd
+                                        </span>
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="button"
+                                            class="time-slot time-slot-taken w-100"
+                                            disabled>
+                                        @slot.DisplayStart
+                                        <span class="d-block" style="font-size: 0.75rem;">
+                                            to @slot.DisplayEnd
+                                        </span>
+                                    </button>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Legend -->
+                    <div class="d-flex align-items-center gap-4"
+                         style="font-size: 0.75rem; color: var(--muted-foreground);">
+                        <div class="d-flex align-items-center gap-2">
+                            <div style="width: 12px; height: 12px; border-radius: 3px; border: 1px solid rgba(22,163,74,0.6);"></div>
+                            Available
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <div style="width: 12px; height: 12px; border-radius: 3px; background-color: var(--primary);"></div>
+                            Selected
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <div style="width: 12px; height: 12px; border-radius: 3px; background-color: var(--secondary); opacity: 0.5;"></div>
+                            Taken
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (Model.SelectedDate.HasValue && !Model.TimeSlots.Any())
+            {
+                <div class="rounded-3 border p-4 text-center"
+                     style="background-color: var(--card); border-color: var(--border) !important;">
+                    <i class="bi bi-clock-history mb-3"
+                       style="font-size: 2.5rem; color: var(--muted-foreground); opacity: 0.4;"></i>
+                    <p style="color: var(--muted-foreground); font-size: 0.875rem;">
+                        No time slots available for this date.
+                    </p>
+                </div>
+            }
+
+        </div>
+
+        <!-- Right Column: Booking Summary -->
+        <div class="col-12 col-lg-5">
+            <div class="rounded-3 border p-4"
+                 style="background-color: var(--card); border-color: var(--border) !important; position: sticky; top: 80px;">
+
+                <h2 class="fw-semibold mb-4"
+                    style="color: var(--foreground); font-size: 1.125rem;">
+                    Booking Summary
+                </h2>
+
+                <!-- Summary Rows -->
+                <div class="d-flex flex-column gap-3 mb-4">
+
+                    <div class="booking-summary-row">
+                        <span class="booking-summary-label">Court</span>
+                        <span class="booking-summary-value">@Model.CourtName</span>
+                    </div>
+
+                    <div class="booking-summary-row">
+                        <span class="booking-summary-label">Sport</span>
+                        <span>
+                            @if (Model.SportType == CourtBook.Models.SportType.Badminton)
+                            {
+                                <span class="badge-badminton">Badminton</span>
+                            }
+                            else
+                            {
+                                <span class="badge-pickleball">Pickleball</span>
+                            }
+                        </span>
+                    </div>
+
+                    <div class="booking-summary-row">
+                        <span class="booking-summary-label">Rate</span>
+                        <span class="booking-summary-value">
+                            &#8369;@Model.PricePerHour.ToString("N0") / hour
+                        </span>
+                    </div>
+
+                    <div class="booking-summary-row">
+                        <span class="booking-summary-label">Date</span>
+                        <span class="booking-summary-value" id="summaryDate">
+                            @(Model.SelectedDate.HasValue
+                                ? Model.SelectedDate.Value.ToString("dddd, MMMM d, yyyy")
+                                : "—")
+                        </span>
+                    </div>
+
+                    <div class="booking-summary-row">
+                        <span class="booking-summary-label">Time</span>
+                        <span class="booking-summary-value" id="summaryTime">—</span>
+                    </div>
+
+                    <!-- Total Amount (shown after slot selected) -->
+                    <div id="totalAmountRow"
+                         class="border-top pt-3 mt-1 d-none"
+                         style="border-color: var(--border) !important;">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <span class="text-uppercase fw-semibold"
+                                  style="color: var(--muted-foreground); font-size: 0.7rem; letter-spacing: 0.08em;">
+                                Total Amount
+                            </span>
+                            <span class="fw-bold" style="color: var(--foreground); font-size: 1.125rem;">
+                                &#8369;@Model.PricePerHour.ToString("N0")
+                            </span>
+                        </div>
+                        <p class="mb-0 mt-1"
+                               style="color: var(--muted-foreground); font-size: 0.75rem;">
+                            Payment collected upon arrival
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- Confirm Button -->
+                <div class="border-top pt-4" style="border-color: var(--border) !important;">
+                    <button type="button"
+                            id="confirmBtn"
+                            class="btn btn-primary w-100 py-3 fw-semibold rounded-3"
+                            style="font-size: 1rem;"
+                            disabled
+                            data-bs-toggle="modal"
+                            data-bs-target="#confirmModal">
+                        Confirm Reservation
+                    </button>
+                    <div id="confirmHint"
+                         class="d-flex align-items-center gap-2 mt-3"
+                         style="color: var(--muted-foreground); font-size: 0.75rem;">
+                        <i class="bi bi-info-circle"></i>
+                        Select a date and time slot to continue.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom"
+                 style="border-color: var(--border) !important;">
+                <h5 class="modal-title fw-semibold"
+                    style="color: var(--foreground);">
+                    Confirm Booking
+                </h5>
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+            <div class="modal-body py-4">
+                <p style="color: var(--muted-foreground); font-size: 0.9rem;" id="modalDescription">
+                </p>
+                <div class="rounded-3 p-3 mt-3"
+                     style="background-color: var(--secondary); border: 1px solid var(--border);">
+                    <div class="d-flex flex-column gap-2" style="font-size: 0.875rem;">
+                        <div class="d-flex justify-content-between">
+                            <span style="color: var(--muted-foreground);">Court</span>
+                            <span class="fw-medium" style="color: var(--foreground);">@Model.CourtName</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span style="color: var(--muted-foreground);">Date</span>
+                            <span class="fw-medium" style="color: var(--foreground);" id="modalDate"></span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span style="color: var(--muted-foreground);">Time</span>
+                            <span class="fw-medium" style="color: var(--foreground);" id="modalTime"></span>
+                        </div>
+                        <div class="d-flex justify-content-between border-top pt-2"
+                             style="border-color: var(--border) !important;">
+                            <span style="color: var(--muted-foreground);">Total</span>
+                            <span class="fw-bold" style="color: var(--foreground);">
+                                &#8369;@Model.PricePerHour.ToString("N0")
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top"
+                 style="border-color: var(--border) !important;">
+                <button type="button"
+                        class="btn btn-secondary px-4"
+                        data-bs-dismiss="modal">
+                    Go Back
+                </button>
+                <form asp-controller="Reservations"
+                      asp-action="Book"
+                      method="post"
+                      id="bookingForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="CourtId" value="@Model.CourtId" />
+                    <input type="hidden" name="SelectedDate"
+                           value="@Model.SelectedDate?.ToString("yyyy-MM-dd")" />
+                    <input type="hidden" name="SelectedStartTime" id="hiddenStartTime" />
+                    <input type="hidden" name="SelectedEndTime" id="hiddenEndTime" />
+                    <button type="submit"
+                            class="btn btn-primary px-4 fw-semibold">
+                        Confirm Booking
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let selectedStart = null;
+        let selectedEnd = null;
+        let selectedDisplayStart = null;
+        let selectedDisplayEnd = null;
+
+        const confirmBtn = document.getElementById('confirmBtn');
+        const confirmHint = document.getElementById('confirmHint');
+        const summaryTime = document.getElementById('summaryTime');
+        const totalAmountRow = document.getElementById('totalAmountRow');
+        const hiddenStartTime = document.getElementById('hiddenStartTime');
+        const hiddenEndTime = document.getElementById('hiddenEndTime');
+        const modalDate = document.getElementById('modalDate');
+        const modalTime = document.getElementById('modalTime');
+        const modalDescription = document.getElementById('modalDescription');
+
+        function selectSlot(btn) {
+            // Deselect all
+            document.querySelectorAll('.slot-btn').forEach(b => {
+                b.classList.remove('time-slot-selected');
+                b.classList.add('time-slot');
+            });
+
+            const start = btn.dataset.start;
+            const end = btn.dataset.end;
+            const dispStart = btn.dataset.displayStart;
+            const dispEnd = btn.dataset.displayEnd;
+
+            // Toggle off if same slot
+            if (selectedStart === start) {
+                selectedStart = null;
+                selectedEnd = null;
+                selectedDisplayStart = null;
+                selectedDisplayEnd = null;
+                updateSummary();
+                return;
+            }
+
+            selectedStart = start;
+            selectedEnd = end;
+            selectedDisplayStart = dispStart;
+            selectedDisplayEnd = dispEnd;
+
+            btn.classList.add('time-slot-selected');
+            btn.classList.remove('time-slot');
+
+            updateSummary();
+        }
+
+        function updateSummary() {
+            if (selectedStart && selectedEnd) {
+                const timeText = `${selectedDisplayStart} – ${selectedDisplayEnd}`;
+                summaryTime.textContent = timeText;
+                totalAmountRow.classList.remove('d-none');
+                confirmBtn.disabled = false;
+                confirmHint.style.display = 'none';
+                hiddenStartTime.value = selectedStart;
+                hiddenEndTime.value = selectedEnd;
+
+                // Update modal content
+                const dateEl = document.getElementById('summaryDate');
+                modalDate.textContent = dateEl ? dateEl.textContent.trim() : '';
+                modalTime.textContent = timeText;
+                modalDescription.textContent =
+                    `You are about to book @Model.CourtName. Please review your booking details below.`;
+            } else {
+                summaryTime.textContent = '—';
+                totalAmountRow.classList.add('d-none');
+                confirmBtn.disabled = true;
+                confirmHint.style.display = 'flex';
+                hiddenStartTime.value = '';
+                hiddenEndTime.value = '';
+            }
+        }
+    </script>
+}

@@ -1,0 +1,789 @@
+/* -----------------------------------------------
+   FONT IMPORT
+----------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* -----------------------------------------------
+   DESIGN TOKENS — mapped from theme.css
+----------------------------------------------- */
+:root {
+    --font-size: 16px;
+    /* Backgrounds */
+    --background: #0F172A;
+    --card: #1E293B;
+    --popover: #1E293B;
+    --sidebar: #0F172A;
+    /* Text */
+    --foreground: #F8FAFC;
+    --card-foreground: #F8FAFC;
+    --muted-foreground: #94A3B8;
+    /* Brand */
+    --primary: #16A34A;
+    --primary-foreground: #ffffff;
+    /* Secondary / Muted */
+    --secondary: #334155;
+    --secondary-foreground: #F8FAFC;
+    --muted: #334155;
+    /* Accent */
+    --accent: rgba(255, 255, 255, 0.08);
+    --accent-foreground: #F8FAFC;
+    /* Destructive */
+    --destructive: #EF4444;
+    --destructive-foreground: #ffffff;
+    /* Borders and Inputs */
+    --border: #475569;
+    --input-background: #334155;
+    --ring: #60A5FA;
+    /* Sport / Chart Colors */
+    --color-badminton: #0F766E;
+    --color-pickleball: #2563EB;
+    --color-warning: #F59E0B;
+    --color-success: #16A34A;
+    --color-danger: #EF4444;
+    /* Sidebar */
+    --sidebar-border: #475569;
+    --sidebar-primary: #16A34A;
+    /* Radius */
+    --radius: 0.75rem;
+    --radius-sm: 0.5rem;
+    --radius-md: 0.625rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+}
+
+/* -----------------------------------------------
+   BASE RESET
+----------------------------------------------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    border-color: var(--border);
+}
+
+html {
+    font-size: var(--font-size);
+}
+
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background-color: var(--background);
+    color: var(--foreground);
+    font-weight: 400;
+    line-height: 1.5;
+    min-height: 100vh;
+}
+
+/* -----------------------------------------------
+   TYPOGRAPHY
+----------------------------------------------- */
+h1 {
+    font-size: 1.75rem;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--foreground);
+}
+
+h2 {
+    font-size: 1.25rem;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--foreground);
+}
+
+h3 {
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--foreground);
+}
+
+h4 {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--foreground);
+}
+
+label {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--foreground);
+}
+
+p {
+    color: var(--muted-foreground);
+    line-height: 1.6;
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+    a:hover {
+        color: var(--primary);
+        text-decoration: underline;
+    }
+
+/* -----------------------------------------------
+   BOOTSTRAP DARK THEME OVERRIDES
+----------------------------------------------- */
+
+/* Page / Body */
+.bg-page {
+    background-color: var(--background) !important;
+}
+
+/* Cards */
+.card {
+    background-color: var(--card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius) !important;
+    color: var(--card-foreground) !important;
+}
+
+.card-header,
+.card-footer {
+    background-color: transparent !important;
+    border-color: var(--border) !important;
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--background) !important;
+    border-bottom: 1px solid var(--border);
+}
+
+.navbar-brand,
+.nav-link {
+    color: var(--foreground) !important;
+}
+
+    .nav-link:hover {
+        color: var(--primary) !important;
+    }
+
+    .nav-link.active {
+        color: var(--primary) !important;
+        border-bottom: 2px solid var(--primary);
+    }
+
+/* Sidebar */
+.sidebar {
+    background-color: var(--sidebar) !important;
+    border-right: 1px solid var(--sidebar-border);
+    min-height: 100vh;
+    width: 250px;
+}
+
+    .sidebar .nav-link {
+        color: var(--foreground) !important;
+        border-radius: var(--radius-sm);
+        padding: 0.625rem 1rem;
+        margin-bottom: 0.25rem;
+        font-weight: 500;
+    }
+
+        .sidebar .nav-link:hover {
+            background-color: var(--accent) !important;
+            color: var(--foreground) !important;
+        }
+
+        .sidebar .nav-link.active {
+            background-color: var(--sidebar-primary) !important;
+            color: var(--primary-foreground) !important;
+            border-bottom: none;
+        }
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: var(--primary-foreground) !important;
+    border-radius: var(--radius-sm) !important;
+    font-weight: 500;
+}
+
+    .btn-primary:hover {
+        background-color: #15803d !important;
+        border-color: #15803d !important;
+    }
+
+.btn-secondary {
+    background-color: var(--secondary) !important;
+    border-color: var(--border) !important;
+    color: var(--secondary-foreground) !important;
+    border-radius: var(--radius-sm) !important;
+    font-weight: 500;
+}
+
+    .btn-secondary:hover {
+        background-color: #3e4f63 !important;
+    }
+
+.btn-danger {
+    background-color: var(--destructive) !important;
+    border-color: var(--destructive) !important;
+    color: var(--destructive-foreground) !important;
+    border-radius: var(--radius-sm) !important;
+    font-weight: 500;
+}
+
+.btn-outline-secondary {
+    border-color: var(--border) !important;
+    color: var(--foreground) !important;
+    border-radius: var(--radius-sm) !important;
+}
+
+    .btn-outline-secondary:hover {
+        background-color: var(--secondary) !important;
+        color: var(--foreground) !important;
+    }
+
+/* Forms / Inputs */
+.form-control,
+.form-select {
+    background-color: var(--input-background) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius-sm) !important;
+    color: var(--foreground) !important;
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+    .form-control:focus,
+    .form-select:focus {
+        background-color: var(--input-background) !important;
+        border-color: var(--ring) !important;
+        box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.2) !important;
+        color: var(--foreground) !important;
+    }
+
+    .form-control::placeholder {
+        color: var(--muted-foreground) !important;
+    }
+
+    .form-control.is-invalid {
+        border-color: var(--destructive) !important;
+    }
+
+.invalid-feedback {
+    color: var(--destructive) !important;
+}
+
+.form-label {
+    color: var(--foreground);
+    font-weight: 500;
+}
+
+/* Tables */
+.table {
+    color: var(--foreground) !important;
+    border-color: var(--border) !important;
+}
+
+    .table thead th {
+        background-color: var(--secondary) !important;
+        color: var(--muted-foreground) !important;
+        border-color: var(--border) !important;
+        font-weight: 500;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .table tbody tr {
+        border-color: var(--border) !important;
+    }
+
+        .table tbody tr:hover {
+            background-color: var(--accent) !important;
+        }
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* Make table cells dark so tables match admin dark theme (prevents white backgrounds) */
+.table th,
+.table td {
+    background-color: transparent !important;
+    color: var(--foreground) !important;
+    border-color: var(--border) !important;
+}
+
+.table tbody tr td {
+    /* ensure cell backgrounds don't appear white in some bootstrap variants */
+    background-color: transparent !important;
+}
+
+/* Modals */
+.modal-content {
+    background-color: var(--card) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius) !important;
+    color: var(--foreground) !important;
+}
+
+.modal-header {
+    border-bottom: 1px solid var(--border) !important;
+}
+
+.modal-footer {
+    border-top: 1px solid var(--border) !important;
+}
+
+.modal-title {
+    color: var(--foreground) !important;
+    font-weight: 500;
+}
+
+.btn-close {
+    filter: invert(1) !important;
+}
+
+/* Badges */
+.badge-badminton {
+    background-color: var(--color-badminton);
+    color: #ffffff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-pickleball {
+    background-color: var(--color-pickleball);
+    color: #ffffff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-confirmed {
+    background-color: var(--color-success);
+    color: #ffffff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-cancelled {
+    background-color: var(--destructive);
+    color: #ffffff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-completed {
+    background-color: var(--secondary);
+    color: var(--muted-foreground);
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-paid {
+    background-color: var(--color-success);
+    color: #ffffff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-unpaid {
+    background-color: var(--color-warning);
+    color: #000000;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-active {
+    background-color: var(--color-success);
+    color: #ffffff;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-inactive {
+    background-color: var(--secondary);
+    color: var(--muted-foreground);
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Time Slot Buttons */
+.time-slot {
+    background-color: var(--secondary);
+    border: 1px solid var(--border);
+    color: var(--foreground);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    width: 100%;
+    text-align: center;
+}
+
+    .time-slot:hover:not(.time-slot-taken):not(.time-slot-selected) {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+.time-slot-selected {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: var(--primary-foreground) !important;
+}
+
+.time-slot-taken {
+    background-color: transparent !important;
+    border-color: var(--border) !important;
+    color: var(--muted-foreground) !important;
+    text-decoration: line-through;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* Sport Filter Pills */
+.filter-pill {
+    background-color: var(--secondary);
+    border: 1px solid var(--border);
+    color: var(--muted-foreground);
+    border-radius: 999px;
+    padding: 0.375rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+    .filter-pill:hover {
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+    .filter-pill.active {
+        background-color: var(--primary);
+        border-color: var(--primary);
+        color: var(--primary-foreground);
+    }
+
+/* Tabs */
+.tab-container {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.25rem;
+    display: inline-flex;
+    gap: 0.25rem;
+}
+
+.tab-pill {
+    border-radius: var(--radius-sm);
+    padding: 0.375rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--muted-foreground);
+    transition: all 0.15s ease;
+    text-decoration: none;
+}
+
+    .tab-pill:hover {
+        color: var(--foreground);
+    }
+
+    .tab-pill.active {
+        background-color: var(--primary);
+        color: var(--primary-foreground);
+    }
+
+/* Stat Summary Cards */
+.stat-card {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+}
+
+    .stat-card .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--foreground);
+        line-height: 1;
+    }
+
+    .stat-card .stat-label {
+        font-size: 0.875rem;
+        color: var(--muted-foreground);
+        margin-top: 0.25rem;
+    }
+
+    .stat-card .stat-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: var(--radius-sm);
+        background-color: var(--accent);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary);
+        font-size: 1.25rem;
+    }
+
+/* Court Cards */
+.court-card {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    transition: border-color 0.15s ease;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+    .court-card:hover {
+        border-color: var(--primary);
+    }
+
+    .court-card .court-name {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--foreground);
+        margin: 0.75rem 0 0.5rem;
+    }
+
+    .court-card .court-hours {
+        font-size: 0.875rem;
+        color: var(--muted-foreground);
+    }
+
+    .court-card .court-price {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-top: 0.5rem;
+    }
+
+    .court-card .card-actions {
+        margin-top: auto;
+        padding-top: 1rem;
+    }
+
+/* Availability Dot */
+.availability-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background-color: var(--color-success);
+    display: inline-block;
+    margin-right: 0.375rem;
+}
+
+/* Booking Summary Card */
+.booking-summary {
+    background-color: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    position: sticky;
+    top: 1.5rem;
+}
+
+    .booking-summary .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.875rem;
+    }
+
+        .booking-summary .summary-row:last-of-type {
+            border-bottom: none;
+        }
+
+    .booking-summary .summary-label {
+        color: var(--muted-foreground);
+    }
+
+    .booking-summary .summary-value {
+        color: var(--foreground);
+        font-weight: 500;
+    }
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    color: var(--muted-foreground);
+}
+
+    .empty-state .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.4;
+    }
+
+    .empty-state p {
+        margin-bottom: 1.5rem;
+        font-size: 0.875rem;
+    }
+
+/* Toast Alerts */
+.alert-success {
+    background-color: rgba(22, 163, 74, 0.15) !important;
+    border: 1px solid var(--color-success) !important;
+    color: #4ade80 !important;
+    border-radius: var(--radius-sm) !important;
+}
+
+.alert-danger {
+    background-color: rgba(239, 68, 68, 0.15) !important;
+    border: 1px solid var(--destructive) !important;
+    color: #f87171 !important;
+    border-radius: var(--radius-sm) !important;
+}
+
+/* Page Header */
+.page-header {
+    margin-bottom: 1.5rem;
+}
+
+    .page-header h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--foreground);
+        margin-bottom: 0.25rem;
+    }
+
+    .page-header .page-subtitle {
+        color: var(--muted-foreground);
+        font-size: 0.875rem;
+    }
+
+/* Dividers */
+hr {
+    border-color: var(--border) !important;
+    opacity: 1 !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--muted-foreground);
+    }
+
+
+
+/* Nav link states */
+.nav-link-active {
+    color: var(--primary) !important;
+    border-bottom: 2px solid var(--primary);
+}
+
+.nav-link-inactive {
+    color: var(--muted-foreground);
+    transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+    .nav-link-inactive:hover {
+        color: var(--foreground) !important;
+        background-color: var(--accent);
+    }
+
+/* Mobile nav states */
+.mobile-nav-active {
+    color: var(--primary) !important;
+}
+
+.mobile-nav-inactive {
+    color: var(--muted-foreground);
+}
+
+
+/* Sidebar nav states */
+.sidebar-nav-active {
+    background-color: var(--sidebar-primary) !important;
+    color: var(--sidebar-primary-foreground) !important;
+}
+
+.sidebar-nav-inactive {
+    color: var(--muted-foreground);
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+    .sidebar-nav-inactive:hover {
+        background-color: var(--sidebar-accent) !important;
+        color: var(--foreground) !important;
+    }
+
+/* Desktop sidebar margin fix */
+@media (min-width: 992px) {
+    .lg-sidebar-offset {
+        margin-left: 256px !important;
+    }
+}
+
+
+
+/* Booking summary row */
+.booking-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.875rem;
+}
+
+    .booking-summary-row:last-of-type {
+        border-bottom: none;
+    }
+
+.booking-summary-label {
+    color: var(--muted-foreground);
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+}
+
+.booking-summary-value {
+    color: var(--foreground);
+    font-weight: 500;
+}

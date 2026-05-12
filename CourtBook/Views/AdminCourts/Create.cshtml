@@ -1,0 +1,272 @@
+﻿@model CourtBook.ViewModels.CreateCourtViewModel
+@{
+    ViewData["Title"] = "Add New Court";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div style="max-width: 672px;">
+
+    <!-- Header -->
+    <div class="mb-4">
+        <a asp-controller="AdminCourts" asp-action="Index"
+               class="d-inline-flex align-items-center gap-2 mb-3 text-decoration-none"
+               style="color: var(--muted-foreground); font-size: 0.875rem; transition: color 0.15s ease;"
+               onmouseover="this.style.color='var(--foreground)'"
+               onmouseout="this.style.color='var(--muted-foreground)'">
+            <i class="bi bi-chevron-left"></i>
+            Back to Courts
+        </a>
+        <h1 class="fw-bold mb-1" style="color: var(--foreground); font-size: 1.875rem;">
+            Add New Court
+        </h1>
+        <p class="mb-0" style="color: var(--muted-foreground);">
+            Fill in the details to create a new court.
+        </p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="rounded-3 border p-4"
+         style="background-color: var(--card); border-color: var(--border) !important;">
+
+        <form asp-controller="AdminCourts" asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <!-- Validation Summary -->
+            <div asp-validation-summary="ModelOnly"
+                 class="mb-4 p-3 rounded-2"
+                 style="background-color: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #FCA5A5; font-size: 0.875rem;">
+            </div>
+
+            <!-- Court Name -->
+            <div class="mb-4">
+                <label asp-for="Name"
+                       class="form-label fw-medium mb-2"
+                       style="color: var(--foreground); font-size: 0.875rem;">
+                    Court Name
+                </label>
+                <input asp-for="Name"
+                       type="text"
+                       placeholder="e.g. Badminton Court Alpha"
+                       class="form-control @(ViewData.ModelState["Name"]?.Errors.Count > 0 ? "is-invalid" : "")"
+                       style="background-color: var(--input-background); border-color: var(--border); color: var(--foreground); border-radius: 0.75rem; padding: 0.625rem 1rem;" />
+                <span asp-validation-for="Name"
+                      style="color: var(--destructive); font-size: 0.75rem;"></span>
+            </div>
+
+            <!-- Sport Type -->
+            <div class="mb-4">
+                <label class="form-label fw-medium mb-3"
+                       style="color: var(--foreground); font-size: 0.875rem;">
+                    Sport Type
+                </label>
+                <div class="row g-3">
+
+                    <!-- Badminton Card -->
+                    <div class="col-6">
+                        <input type="radio"
+                               asp-for="SportType"
+                               value="Badminton"
+                               id="sportBadminton"
+                               class="d-none sport-radio" />
+                        <label for="sportBadminton"
+                               class="sport-card d-flex flex-column align-items-center gap-2 p-4 rounded-3 border-2 text-center w-100"
+                               style="cursor: pointer; transition: all 0.15s ease;"
+                               data-sport="Badminton">
+                            <div class="d-flex align-items-center justify-content-center rounded-2 p-2"
+                                 style="background-color: rgba(15,118,110,0.2); width: 48px; height: 48px;">
+                                <i class="bi bi-hammer" style="color: #0F766E; font-size: 1.25rem;"></i>
+                            </div>
+                            <div>
+                                <p class="fw-semibold mb-0" style="font-size: 0.875rem; color: var(--foreground);">
+                                    Badminton
+                                </p>
+                                <p class="mb-0" style="font-size: 0.75rem; color: var(--muted-foreground);">
+                                    Shuttle-based net sport
+                                </p>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Pickleball Card -->
+                    <div class="col-6">
+                        <input type="radio"
+                               asp-for="SportType"
+                               value="Pickleball"
+                               id="sportPickleball"
+                               class="d-none sport-radio" />
+                        <label for="sportPickleball"
+                               class="sport-card d-flex flex-column align-items-center gap-2 p-4 rounded-3 border-2 text-center w-100"
+                               style="cursor: pointer; transition: all 0.15s ease;"
+                               data-sport="Pickleball">
+                            <div class="d-flex align-items-center justify-content-center rounded-2 p-2"
+                                 style="background-color: rgba(37,99,235,0.2); width: 48px; height: 48px;">
+                                <i class="bi bi-lightning-charge" style="color: #2563EB; font-size: 1.25rem;"></i>
+                            </div>
+                            <div>
+                                <p class="fw-semibold mb-0" style="font-size: 0.875rem; color: var(--foreground);">
+                                    Pickleball
+                                </p>
+                                <p class="mb-0" style="font-size: 0.75rem; color: var(--muted-foreground);">
+                                    Paddle &amp; wiffle ball sport
+                                </p>
+                            </div>
+                        </label>
+                    </div>
+
+                </div>
+                <span asp-validation-for="SportType"
+                      style="color: var(--destructive); font-size: 0.75rem;"></span>
+            </div>
+
+            <!-- Operating Hours -->
+            <div class="mb-4">
+                <label asp-for="OperatingHours"
+                       class="form-label fw-medium mb-3"
+                       style="color: var(--foreground); font-size: 0.875rem;">
+                    Operating Hours
+                </label>
+                <div class="d-flex align-items-center gap-3">
+                    <select id="hoursStart"
+                            class="form-select flex-fill"
+                            style="background-color: var(--input-background); border-color: var(--border); color: var(--foreground); border-radius: 0.75rem; padding: 0.625rem 1rem;">
+                        <option>5:00 AM</option>
+                        <option selected>6:00 AM</option>
+                        <option>7:00 AM</option>
+                        <option>8:00 AM</option>
+                        <option>9:00 AM</option>
+                        <option>10:00 AM</option>
+                        <option>11:00 AM</option>
+                        <option>12:00 PM</option>
+                        <option>1:00 PM</option>
+                        <option>2:00 PM</option>
+                        <option>3:00 PM</option>
+                        <option>4:00 PM</option>
+                        <option>5:00 PM</option>
+                        <option>6:00 PM</option>
+                        <option>7:00 PM</option>
+                        <option>8:00 PM</option>
+                        <option>9:00 PM</option>
+                    </select>
+                    <span class="fw-medium" style="color: var(--muted-foreground); font-size: 0.875rem;">
+                        to
+                    </span>
+                    <select id="hoursEnd"
+                            class="form-select flex-fill"
+                            style="background-color: var(--input-background); border-color: var(--border); color: var(--foreground); border-radius: 0.75rem; padding: 0.625rem 1rem;">
+                        <option>6:00 AM</option>
+                        <option>7:00 AM</option>
+                        <option>8:00 AM</option>
+                        <option>9:00 AM</option>
+                        <option>10:00 AM</option>
+                        <option>11:00 AM</option>
+                        <option>12:00 PM</option>
+                        <option>1:00 PM</option>
+                        <option>2:00 PM</option>
+                        <option>3:00 PM</option>
+                        <option>4:00 PM</option>
+                        <option>5:00 PM</option>
+                        <option>6:00 PM</option>
+                        <option>7:00 PM</option>
+                        <option>8:00 PM</option>
+                        <option>9:00 PM</option>
+                        <option selected>10:00 PM</option>
+                        <option>11:00 PM</option>
+                    </select>
+                </div>
+                <!-- Hidden field that combines start + end -->
+                <input asp-for="OperatingHours"
+                       type="hidden"
+                       id="operatingHoursHidden" />
+                <span asp-validation-for="OperatingHours"
+                      style="color: var(--destructive); font-size: 0.75rem;"></span>
+            </div>
+
+            <!-- Price Per Hour -->
+            <div class="mb-4">
+                <label asp-for="PricePerHour"
+                       class="form-label fw-medium mb-2"
+                       style="color: var(--foreground); font-size: 0.875rem;">
+                    Price Per Hour (&#8369;)
+                </label>
+                <div class="position-relative">
+                    <span class="position-absolute fw-medium"
+                          style="left: 1rem; top: 50%; transform: translateY(-50%); color: var(--muted-foreground); font-size: 0.875rem; pointer-events: none;">
+                        &#8369;
+                    </span>
+                    <input asp-for="PricePerHour"
+                           type="number"
+                           min="1"
+                           step="1"
+                           placeholder="150"
+                           class="form-control @(ViewData.ModelState["PricePerHour"]?.Errors.Count > 0 ? "is-invalid" : "")"
+                           style="background-color: var(--input-background); border-color: var(--border); color: var(--foreground); border-radius: 0.75rem; padding: 0.625rem 1rem 0.625rem 2.25rem;" />
+                </div>
+                <span asp-validation-for="PricePerHour"
+                      style="color: var(--destructive); font-size: 0.75rem;"></span>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="d-flex gap-3 pt-2">
+                <button type="submit"
+                        class="btn btn-primary flex-fill py-3 fw-semibold rounded-3"
+                        style="font-size: 1rem;">
+                    Save Court
+                </button>
+                <a asp-controller="AdminCourts" asp-action="Index"
+                       class="btn btn-secondary px-4 py-3 fw-semibold rounded-3"
+                       style="font-size: 1rem;">
+                    Cancel
+                </a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        // Sport card selection styling
+        const radios = document.querySelectorAll('.sport-radio');
+        const cards = document.querySelectorAll('.sport-card');
+
+        function updateCardStyles() {
+            radios.forEach(radio => {
+                const label = document.querySelector(`label[for="${radio.id}"]`);
+                const sport = label.getAttribute('data-sport');
+                if (radio.checked) {
+                    if (sport === 'Badminton') {
+                        label.style.borderColor = '#0F766E';
+                        label.style.backgroundColor = 'rgba(15,118,110,0.15)';
+                    } else {
+                        label.style.borderColor = '#2563EB';
+                        label.style.backgroundColor = 'rgba(37,99,235,0.15)';
+                    }
+                } else {
+                    label.style.borderColor = 'var(--border)';
+                    label.style.backgroundColor = 'rgba(51,65,85,0.30)';
+                }
+            });
+        }
+
+        radios.forEach(radio => {
+            radio.addEventListener('change', updateCardStyles);
+        });
+
+        // Initialize on page load
+        updateCardStyles();
+
+        // Operating hours hidden field
+        function updateOperatingHours() {
+            const start = document.getElementById('hoursStart').value;
+            const end = document.getElementById('hoursEnd').value;
+            document.getElementById('operatingHoursHidden').value = `${start} - ${end}`;
+        }
+
+        document.getElementById('hoursStart').addEventListener('change', updateOperatingHours);
+        document.getElementById('hoursEnd').addEventListener('change', updateOperatingHours);
+
+        // Set initial value
+        updateOperatingHours();
+    </script>
+}

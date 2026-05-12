@@ -1,0 +1,238 @@
+﻿@model CourtBook.ViewModels.AdminDashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!-- Header -->
+<div class="page-header mb-4">
+    <h1 class="fw-bold" style="color: var(--foreground); font-size: 1.875rem;">
+        Dashboard
+    </h1>
+    <p class="page-subtitle">
+        @DateTime.Today.ToString("dddd, MMMM d, yyyy")
+    </p>
+</div>
+
+<!-- ✅ Stat Cards Row (ALL cards inside this .row) -->
+<div class="row g-4 mb-4">
+
+    <!-- Total Revenue (MOVED INSIDE) -->
+    <div class="col-12 col-sm-6 col-xl-4">
+        <div class="stat-card border" style="border-color: var(--border) !important;">
+            <div class="d-flex align-items-start justify-content-between mb-4">
+                <div class="stat-icon" style="background-color: rgba(37,99,235,0.15);">
+                    <i class="bi bi-currency-exchange" style="color: #2563EB;"></i>
+                </div>
+                <i class="bi bi-graph-up" style="color: var(--border);"></i>
+            </div>
+            <p class="stat-number" style="color: #2563EB;">
+                &#8369;@Model.TotalRevenue.ToString("N0")
+            </p>
+            <p class="stat-label">Total Revenue (Paid)</p>
+        </div>
+    </div>
+
+    <!-- Today's Reservations -->
+    <div class="col-12 col-sm-6 col-xl-4">
+        <div class="stat-card border" style="border-color: var(--border) !important;">
+            <div class="d-flex align-items-start justify-content-between mb-4">
+                <div class="stat-icon" style="background-color: rgba(22,163,74,0.15);">
+                    <i class="bi bi-calendar-check" style="color: var(--primary);"></i>
+                </div>
+                <i class="bi bi-graph-up" style="color: var(--border);"></i>
+            </div>
+            <p class="stat-number" style="color: var(--primary);">
+                @Model.TodaysReservationCount
+            </p>
+            <p class="stat-label">Today's Reservations</p>
+        </div>
+    </div>
+
+    <!-- Total Active Courts -->
+    <div class="col-12 col-sm-6 col-xl-4">
+        <div class="stat-card border" style="border-color: var(--border) !important;">
+            <div class="d-flex align-items-start justify-content-between mb-4">
+                <div class="stat-icon" style="background-color: rgba(37,99,235,0.15);">
+                    <i class="bi bi-building" style="color: #2563EB;"></i>
+                </div>
+                <i class="bi bi-graph-up" style="color: var(--border);"></i>
+            </div>
+            <p class="stat-number" style="color: #2563EB;">
+                @Model.TotalActiveCourts
+            </p>
+            <p class="stat-label">Total Active Courts</p>
+        </div>
+    </div>
+
+    <!-- Registered Users -->
+    <div class="col-12 col-sm-6 col-xl-4">
+        <div class="stat-card border" style="border-color: var(--border) !important;">
+            <div class="d-flex align-items-start justify-content-between mb-4">
+                <div class="stat-icon" style="background-color: rgba(15,118,110,0.15);">
+                    <i class="bi bi-people" style="color: #0F766E;"></i>
+                </div>
+                <i class="bi bi-graph-up" style="color: var(--border);"></i>
+            </div>
+            <p class="stat-number" style="color: #0F766E;">
+                @Model.TotalRegisteredUsers
+            </p>
+            <p class="stat-label">Registered Users</p>
+        </div>
+    </div>
+
+    <!-- Reservations This Week -->
+    <div class="col-12 col-sm-6 col-xl-4">
+        <div class="stat-card border" style="border-color: var(--border) !important;">
+            <div class="d-flex align-items-start justify-content-between mb-4">
+                <div class="stat-icon" style="background-color: rgba(245,158,11,0.15);">
+                    <i class="bi bi-bar-chart" style="color: #F59E0B;"></i>
+                </div>
+                <i class="bi bi-graph-up" style="color: var(--border);"></i>
+            </div>
+            <p class="stat-number" style="color: #F59E0B;">
+                @Model.ReservationsThisWeek
+            </p>
+            <p class="stat-label">Reservations This Week</p>
+        </div>
+    </div>
+
+</div> <!-- ✅ Close .row here -->
+<!-- Recent Reservations Table -->
+<div class="rounded-3 border overflow-hidden"
+     style="background-color: var(--card); border-color: var(--border) !important;">
+
+    <!-- Table Header with Filters -->
+    <div class="px-4 py-3 border-bottom d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3"
+         style="border-color: var(--border) !important;">
+        <h2 class="fw-semibold mb-0" style="color: var(--foreground); font-size: 1.125rem;">
+            Recent Reservations
+        </h2>
+
+        <!-- Filters -->
+        <form method="get"
+              asp-controller="AdminDashboard"
+              asp-action="Index"
+              class="d-flex flex-wrap gap-2 align-items-center">
+            <input type="date"
+                   name="date"
+                   value="@Model.FilterDate"
+                   class="form-control form-control-sm"
+                   style="background-color: var(--secondary); border-color: var(--border); color: var(--foreground); border-radius: 0.5rem; width: auto;" />
+
+            <select name="status"
+                    class="form-select form-select-sm"
+                    style="background-color: var(--secondary); border-color: var(--border); color: var(--foreground); border-radius: 0.5rem; width: auto;">
+                <option value="" selected="@(string.IsNullOrEmpty(Model.FilterStatus))">All</option>
+                <option value="Confirmed" selected="@(Model.FilterStatus == "Confirmed")">Confirmed</option>
+                <option value="Completed" selected="@(Model.FilterStatus == "Completed")">Completed</option>
+                <option value="Cancelled" selected="@(Model.FilterStatus == "Cancelled")">Cancelled</option>
+            </select>
+
+            <button type="submit"
+                    class="btn btn-sm btn-secondary px-3">
+                Filter
+            </button>
+
+            @if (!string.IsNullOrEmpty(Model.FilterDate) || !string.IsNullOrEmpty(Model.FilterStatus))
+            {
+                <a asp-controller="AdminDashboard" asp-action="Index"
+                       class="btn btn-sm px-3"
+                       style="color: var(--muted-foreground); background: transparent; border: none;">
+                    Clear
+                </a>
+            }
+        </form>
+    </div>
+
+    <!-- Table -->
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th class="px-4 py-3">User</th>
+                    <th class="px-4 py-3">Court</th>
+                    <th class="px-4 py-3">Sport</th>
+                    <th class="px-4 py-3">Date</th>
+                    <th class="px-4 py-3">Time</th>
+                    <th class="px-4 py-3">Amount</th>
+                    <th class="px-4 py-3">Payment</th>
+                    <th class="px-4 py-3">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.RecentReservations.Any())
+                {
+                    <tr>
+                        <td colspan="8" class="text-center py-5"
+                            style="color: var(--muted-foreground); font-size: 0.875rem;">
+                            No reservations found.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var res in Model.RecentReservations)
+                    {
+                        <tr>
+                            <td class="px-4 py-3"
+                                style="color: var(--foreground); font-size: 0.875rem;">
+                                @res.UserName
+                            </td>
+                            <td class="px-4 py-3"
+                                style="color: var(--foreground); font-size: 0.875rem;">
+                                @res.CourtName
+                            </td>
+                            <td class="px-4 py-3">
+                                @if (res.SportType == CourtBook.Models.SportType.Badminton)
+                                {
+                                    <span class="badge-badminton">Badminton</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-pickleball">Pickleball</span>
+                                }
+                            </td>
+                            <td class="px-4 py-3"
+                                style="color: var(--muted-foreground); font-size: 0.875rem;">
+                                @res.Date.ToString("MMM d, yyyy")
+                            </td>
+                            <td class="px-4 py-3"
+                                style="color: var(--muted-foreground); font-size: 0.875rem;">
+                                @res.DisplayStart – @res.DisplayEnd
+                            </td>
+                            <td class="px-4 py-3 fw-medium"
+                                style="color: var(--foreground); font-size: 0.875rem;">
+                                &#8369;@res.TotalAmount.ToString("N0")
+                            </td>
+                            <td class="px-4 py-3">
+                                @if (res.PaymentStatus == CourtBook.Models.PaymentStatus.Paid)
+                                {
+                                    <span class="badge-paid">Paid</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-unpaid">Unpaid</span>
+                                }
+                            </td>
+                            <td class="px-4 py-3">
+                                @switch (res.Status)
+                                {
+                                    case CourtBook.Models.ReservationStatus.Confirmed:
+                                        <span class="badge-confirmed">Confirmed</span>
+                                        break;
+                                    case CourtBook.Models.ReservationStatus.Completed:
+                                        <span class="badge-completed">Completed</span>
+                                        break;
+                                    case CourtBook.Models.ReservationStatus.Cancelled:
+                                        <span class="badge-cancelled">Cancelled</span>
+                                        break;
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

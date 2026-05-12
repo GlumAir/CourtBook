@@ -1,0 +1,255 @@
+﻿@model List<CourtBook.ViewModels.AdminUserRowViewModel>
+@{
+    ViewData["Title"] = "Users";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var search = ViewBag.Search as string;
+    int activeCount = ViewBag.ActiveCount;
+    int deactivatedCount = ViewBag.DeactivatedCount;
+}
+
+<!-- Header -->
+<div class="page-header mb-4">
+    <h1 class="fw-bold" style="color: var(--foreground); font-size: 1.875rem;">
+        Users
+    </h1>
+    <p class="page-subtitle">Manage registered user accounts.</p>
+</div>
+
+<!-- Search -->
+<div class="position-relative mb-4" style="max-width: 448px;">
+    <i class="bi bi-search position-absolute"
+       style="left: 1rem; top: 50%; transform: translateY(-50%); color: var(--muted-foreground); font-size: 0.875rem; pointer-events: none;"></i>
+    <form method="get" asp-controller="AdminUsers" asp-action="Index">
+        <input type="text"
+               name="search"
+               value="@search"
+               placeholder="Search by name or email..."
+               class="form-control"
+               id="adminUsersSearch"
+               style="background-color: var(--input-background); border-color: var(--border); color: var(--foreground); border-radius: 0.75rem; padding: 0.625rem 1rem 0.625rem 2.5rem; font-size: 0.875rem;"
+               onkeydown="if (event.key === 'Enter') this.form.submit();" />
+    </form>
+</div>
+
+<!-- Summary -->
+<div class="d-flex gap-4 mb-4">
+    <div class="d-flex align-items-center gap-2">
+        <div style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-success);"></div>
+        <span style="color: var(--muted-foreground); font-size: 0.875rem;">
+            @activeCount Active
+        </span>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <div style="width: 8px; height: 8px; border-radius: 50%; background-color: var(--destructive);"></div>
+        <span style="color: var(--muted-foreground); font-size: 0.875rem;">
+            @deactivatedCount Deactivated
+        </span>
+    </div>
+</div>
+
+<!-- Table -->
+<div class="rounded-3 border overflow-hidden"
+     style="background-color: var(--card); border-color: var(--border) !important;">
+
+    @if (!Model.Any())
+    {
+        <div class="p-5 text-center">
+            <div class="mb-3"
+                 style="color: var(--muted-foreground); font-size: 3rem; opacity: 0.4;">
+                <i class="bi bi-people"></i>
+            </div>
+            <h5 class="fw-semibold mb-2" style="color: var(--foreground);">
+                @(string.IsNullOrEmpty(search) ? "No registered users" : "No users found")
+            </h5>
+            <p class="mb-0"
+                   style="color: var(--muted-foreground); font-size: 0.875rem;">
+                @(string.IsNullOrEmpty(search)
+                    ? "Registered users will appear here."
+                    : $"No users match \"{search}\".")
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-3 text-nowrap">Full Name</th>
+                        <th class="px-4 py-3 text-nowrap">Email</th>
+                        <th class="px-4 py-3 text-nowrap">Date Registered</th>
+                        <th class="px-4 py-3 text-nowrap">Status</th>
+                        <th class="px-4 py-3 text-nowrap">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var u in Model)
+                    {
+                        <tr>
+                            <!-- Full Name with Avatar -->
+                            <td class="px-4 py-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="d-flex align-items-center justify-content-center rounded-circle fw-semibold flex-shrink-0"
+                                         style="width: 32px; height: 32px; background-color: var(--secondary); color: var(--muted-foreground); font-size: 0.875rem;">
+                                        @u.FullName.Substring(0, 1).ToUpper()
+                                    </div>
+                                    <span class="fw-medium text-nowrap"
+                                          style="color: var(--foreground); font-size: 0.875rem;">
+                                        @u.FullName
+                                    </span>
+                                </div>
+                            </td>
+
+                            <!-- Email -->
+                            <td class="px-4 py-3"
+                                style="color: var(--muted-foreground); font-size: 0.875rem;">
+                                @u.Email
+                            </td>
+
+                            <!-- Date Registered -->
+                            <td class="px-4 py-3 text-nowrap"
+                                style="color: var(--muted-foreground); font-size: 0.875rem;">
+                                @u.CreatedAt.ToString("MMM d, yyyy")
+                            </td>
+
+                            <!-- Status -->
+                            <td class="px-4 py-3">
+                                @if (u.IsActive)
+                                {
+                                    <span class="badge-active">Active</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-inactive">Deactivated</span>
+                                }
+                            </td>
+
+                            <!-- Action -->
+                            <td class="px-4 py-3">
+                                @if (u.IsActive)
+                                {
+                                    <button type="button"
+                                            class="btn d-inline-flex align-items-center gap-1 px-3 py-1 rounded-2 fw-medium"
+                                            style="background-color: rgba(239,68,68,0.10); border: 1px solid rgba(239,68,68,0.3); color: #FCA5A5; font-size: 0.75rem;"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#userActionModal"
+                                            data-user-id="@u.Id"
+                                            data-user-name="@u.FullName"
+                                            data-action="deactivate">
+                                        <i class="bi bi-person-x" style="font-size: 0.75rem;"></i>
+                                        Deactivate
+                                    </button>
+                                }
+                                else
+                                {
+                                    <button type="button"
+                                            class="btn d-inline-flex align-items-center gap-1 px-3 py-1 rounded-2 fw-medium"
+                                            style="background-color: rgba(22,163,74,0.10); border: 1px solid rgba(22,163,74,0.3); color: #4ADE80; font-size: 0.75rem;"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#userActionModal"
+                                            data-user-id="@u.Id"
+                                            data-user-name="@u.FullName"
+                                            data-action="reactivate">
+                                        <i class="bi bi-person-check" style="font-size: 0.75rem;"></i>
+                                        Reactivate
+                                    </button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<!-- User Action Modal -->
+<div class="modal fade" id="userActionModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom"
+                 style="border-color: var(--border) !important;">
+                <h5 class="modal-title fw-semibold" id="userActionModalTitle"
+                    style="color: var(--foreground);">
+                </h5>
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+            <div class="modal-body py-4">
+                <div class="d-flex align-items-center justify-content-center mb-4">
+                    <div class="d-flex align-items-center justify-content-center rounded-circle"
+                         id="userActionModalIcon"
+                         style="width: 56px; height: 56px;">
+                        <i id="userActionModalIconI" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+                <p class="text-center mb-0"
+                       id="userActionModalDescription"
+                       style="color: var(--muted-foreground); font-size: 0.9rem;">
+                </p>
+            </div>
+            <div class="modal-footer border-top"
+                 style="border-color: var(--border) !important;">
+                <button type="button"
+                        class="btn btn-secondary px-4"
+                        data-bs-dismiss="modal">
+                    Cancel
+                </button>
+                <form id="userActionForm" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="userActionId" />
+                    <button type="submit"
+                            id="userActionConfirmBtn"
+                            class="btn px-4 fw-semibold">
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const userActionModal = document.getElementById('userActionModal');
+
+        userActionModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const userId = button.getAttribute('data-user-id');
+            const userName = button.getAttribute('data-user-name');
+            const action = button.getAttribute('data-action');
+
+            document.getElementById('userActionId').value = userId;
+
+            const title = document.getElementById('userActionModalTitle');
+            const description = document.getElementById('userActionModalDescription');
+            const iconWrap = document.getElementById('userActionModalIcon');
+            const iconEl = document.getElementById('userActionModalIconI');
+            const confirmBtn = document.getElementById('userActionConfirmBtn');
+            const form = document.getElementById('userActionForm');
+
+            if (action === 'deactivate') {
+                title.textContent = 'Deactivate User';
+                description.textContent =
+                    `Are you sure you want to deactivate "${userName}"? They will no longer be able to log in.`;
+                iconWrap.style.backgroundColor = 'rgba(239,68,68,0.15)';
+                iconEl.className = 'bi bi-person-x';
+                iconEl.style.color = '#EF4444';
+                confirmBtn.textContent = 'Deactivate';
+                confirmBtn.className = 'btn btn-danger px-4 fw-semibold';
+                form.action = '@Url.Action("Deactivate", "AdminUsers")';
+            } else {
+                title.textContent = 'Reactivate User';
+                description.textContent =
+                    `Are you sure you want to reactivate "${userName}"? They will regain access to their account.`;
+                iconWrap.style.backgroundColor = 'rgba(22,163,74,0.15)';
+                iconEl.className = 'bi bi-person-check';
+                iconEl.style.color = '#16A34A';
+                confirmBtn.textContent = 'Reactivate';
+                confirmBtn.className = 'btn btn-primary px-4 fw-semibold';
+                form.action = '@Url.Action("Reactivate", "AdminUsers")';
+            }
+        });
+    </script>
+}

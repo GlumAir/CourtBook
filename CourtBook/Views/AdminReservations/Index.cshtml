@@ -1,0 +1,348 @@
+﻿@model List<CourtBook.ViewModels.AdminReservationRowViewModel>
+@{
+    ViewData["Title"] = "Reservations";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
+    var filterDateFrom = ViewBag.FilterDateFrom as string;
+    var filterDateTo = ViewBag.FilterDateTo as string;
+    var filterSport = ViewBag.FilterSport as string;
+    var filterStatus = ViewBag.FilterStatus as string;
+    var filterPayment = ViewBag.FilterPayment as string;
+
+    bool hasFilters = !string.IsNullOrEmpty(filterDateFrom) ||
+                      !string.IsNullOrEmpty(filterDateTo) ||
+                      !string.IsNullOrEmpty(filterSport) ||
+                      !string.IsNullOrEmpty(filterStatus) ||
+                      !string.IsNullOrEmpty(filterPayment);
+}
+
+<!-- Header -->
+<div class="page-header mb-4">
+    <h1 class="fw-bold" style="color: var(--foreground); font-size: 1.875rem;">
+        Reservations
+    </h1>
+    <p class="page-subtitle">View and manage all court reservations.</p>
+</div>
+
+<!-- Filters Card -->
+<div class="rounded-3 border p-4 mb-4"
+     style="background-color: var(--card); border-color: var(--border) !important;">
+
+    <form method="get"
+          asp-controller="AdminReservations"
+          asp-action="Index">
+
+        <div class="d-flex flex-wrap gap-3 align-items-end">
+
+            <!-- From Date -->
+            <div class="d-flex flex-column gap-1">
+                <label class="fw-semibold text-uppercase"
+                       style="color: var(--muted-foreground); font-size: 0.7rem; letter-spacing: 0.08em;">
+                    From Date
+                </label>
+                <input type="date"
+                       name="dateFrom"
+                       value="@filterDateFrom"
+                       class="form-control form-control-sm"
+                       style="background-color: var(--secondary); border-color: var(--border); color: var(--foreground); border-radius: 0.75rem; width: auto;" />
+            </div>
+
+            <!-- To Date -->
+            <div class="d-flex flex-column gap-1">
+                <label class="fw-semibold text-uppercase"
+                       style="color: var(--muted-foreground); font-size: 0.7rem; letter-spacing: 0.08em;">
+                    To Date
+                </label>
+                <input type="date"
+                       name="dateTo"
+                       value="@filterDateTo"
+                       class="form-control form-control-sm"
+                       style="background-color: var(--secondary); border-color: var(--border); color: var(--foreground); border-radius: 0.75rem; width: auto;" />
+            </div>
+
+            <!-- Sport -->
+            <div class="d-flex flex-column gap-1">
+                <label class="fw-semibold text-uppercase"
+                       style="color: var(--muted-foreground); font-size: 0.7rem; letter-spacing: 0.08em;">
+                    Sport
+                </label>
+                <select name="sport"
+                        class="form-select form-select-sm"
+                        style="background-color: var(--secondary); border-color: var(--border); color: var(--foreground); border-radius: 0.75rem; width: auto;">
+                    <option value="" selected="@(string.IsNullOrEmpty(filterSport))">All Sports</option>
+                    <option value="Badminton" selected="@(filterSport == "Badminton")">Badminton</option>
+                    <option value="Pickleball" selected="@(filterSport == "Pickleball")">Pickleball</option>
+                </select>
+            </div>
+
+            <!-- Status -->
+            <div class="d-flex flex-column gap-1">
+                <label class="fw-semibold text-uppercase"
+                       style="color: var(--muted-foreground); font-size: 0.7rem; letter-spacing: 0.08em;">
+                    Status
+                </label>
+                <select name="status"
+                        class="form-select form-select-sm"
+                        style="background-color: var(--secondary); border-color: var(--border); color: var(--foreground); border-radius: 0.75rem; width: auto;">
+                    <option value="" selected="@(string.IsNullOrEmpty(filterStatus))">All Statuses</option>
+                    <option value="Confirmed" selected="@(filterStatus == "Confirmed")">Confirmed</option>
+                    <option value="Completed" selected="@(filterStatus == "Completed")">Completed</option>
+                    <option value="Cancelled" selected="@(filterStatus == "Cancelled")">Cancelled</option>
+                </select>
+            </div>
+
+            <!-- Payment -->
+            <div class="d-flex flex-column gap-1">
+                <label class="fw-semibold text-uppercase"
+                       style="color: var(--muted-foreground); font-size: 0.7rem; letter-spacing: 0.08em;">
+                    Payment
+                </label>
+                <select name="payment"
+                        class="form-select form-select-sm"
+                        style="background-color: var(--secondary); border-color: var(--border); color: var(--foreground); border-radius: 0.75rem; width: auto;">
+                    <option value="" selected="@(string.IsNullOrEmpty(filterPayment))">All Payments</option>
+                    <option value="Paid" selected="@(filterPayment == "Paid")">Paid</option>
+                    <option value="Unpaid" selected="@(filterPayment == "Unpaid")">Unpaid</option>
+                </select>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" 
+                    class="btn btn-secondary btn-sm px-4 py-2 rounded-3">
+                Filter 
+            </button>
+
+            <!-- Clear -->
+            @if (hasFilters)
+            {
+                <a asp-controller="AdminReservations" asp-action="Index"
+                       class="btn btn-sm px-3 py-2 rounded-3"
+                       style="color: var(--muted-foreground); border: 1px solid var(--border); background: transparent;">
+                    Clear Filters
+                </a>
+            }
+
+        </div>
+
+        <!-- Result Count -->
+        <p class="mb-0 mt-3"
+               style="color: var(--border); font-size: 0.75rem;">
+            @Model.Count reservation@(Model.Count != 1 ? "s" : "") found
+        </p>
+
+    </form>
+</div>
+
+<!-- Table -->
+<div class="rounded-3 border overflow-hidden"
+     style="background-color: var(--card); border-color: var(--border) !important;">
+
+    @if (!Model.Any())
+    {
+        <div class="p-5 text-center">
+            <div class="mb-3"
+                 style="color: var(--muted-foreground); font-size: 3rem; opacity: 0.4;">
+                <i class="bi bi-calendar-x"></i>
+            </div>
+            <h5 class="fw-semibold mb-2" style="color: var(--foreground);">
+                No reservations found
+            </h5>
+            <p class="mb-0"
+                   style="color: var(--muted-foreground); font-size: 0.875rem;">
+                No reservations match the selected filters.
+            </p>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-3 text-nowrap">User</th>
+                        <th class="px-4 py-3 text-nowrap">Court</th>
+                        <th class="px-4 py-3 text-nowrap">Sport</th>
+                        <th class="px-4 py-3 text-nowrap">Date</th>
+                        <th class="px-4 py-3 text-nowrap">Start</th>
+                        <th class="px-4 py-3 text-nowrap">End</th>
+                        <th class="px-4 py-3 text-nowrap">Amount</th>
+                        <th class="px-4 py-3 text-nowrap">Payment</th>
+                        <th class="px-4 py-3 text-nowrap">Status</th>
+                        <th class="px-4 py-3 text-nowrap">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var res in Model)
+                    {
+                        var canCancel = res.Status == CourtBook.Models.ReservationStatus.Confirmed;
+                        var canMarkPaid = res.PaymentStatus == CourtBook.Models.PaymentStatus.Unpaid
+                                       && res.Status != CourtBook.Models.ReservationStatus.Cancelled;
+
+                        <tr>
+                            <td class="px-4 py-3 text-nowrap"
+                                style="color: var(--foreground); font-size: 0.875rem;">
+                                @res.UserName
+                            </td>
+                            <td class="px-4 py-3 text-nowrap"
+                                style="color: var(--foreground); font-size: 0.875rem;">
+                                @res.CourtName
+                            </td>
+                            <td class="px-4 py-3">
+                                @if (res.SportType == CourtBook.Models.SportType.Badminton)
+                                {
+                                    <span class="badge-badminton">Badminton</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-pickleball">Pickleball</span>
+                                }
+                            </td>
+                            <td class="px-4 py-3 text-nowrap"
+                                style="color: var(--muted-foreground); font-size: 0.875rem;">
+                                @res.Date.ToString("MMM d, yyyy")
+                            </td>
+                            <td class="px-4 py-3 text-nowrap"
+                                style="color: var(--muted-foreground); font-size: 0.875rem;">
+                                @res.DisplayStart
+                            </td>
+                            <td class="px-4 py-3 text-nowrap"
+                                style="color: var(--muted-foreground); font-size: 0.875rem;">
+                                @res.DisplayEnd
+                            </td>
+                            <td class="px-4 py-3 fw-medium text-nowrap"
+                                style="color: var(--foreground); font-size: 0.875rem;">
+                                &#8369;@res.TotalAmount.ToString("N0")
+                            </td>
+                            <td class="px-4 py-3">
+                                @if (res.PaymentStatus == CourtBook.Models.PaymentStatus.Paid)
+                                {
+                                    <span class="badge-paid">Paid</span>
+                                }
+                                else
+                                {
+                                    <span class="badge-unpaid">Unpaid</span>
+                                }
+                            </td>
+                            <td class="px-4 py-3">
+                                @switch (res.Status)
+                                {
+                                    case CourtBook.Models.ReservationStatus.Confirmed:
+                                        <span class="badge-confirmed">Confirmed</span>
+                                        break;
+                                    case CourtBook.Models.ReservationStatus.Completed:
+                                        <span class="badge-completed">Completed</span>
+                                        break;
+                                    case CourtBook.Models.ReservationStatus.Cancelled:
+                                        <span class="badge-cancelled">Cancelled</span>
+                                        break;
+                                }
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="d-flex align-items-center gap-2">
+
+                                    @if (canMarkPaid)
+                                    {
+                                        <form asp-controller="AdminReservations"
+                                              asp-action="MarkPaid"
+                                              method="post"
+                                              class="m-0">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@res.Id" />
+                                            <button type="submit"
+                                                    class="btn d-inline-flex align-items-center gap-1 px-3 py-1 rounded-2 fw-medium text-nowrap"
+                                                    style="background-color: rgba(37,99,235,0.10); border: 1px solid rgba(37,99,235,0.3); color: #93C5FD; font-size: 0.75rem;">
+                                                <i class="bi bi-cash-coin" style="font-size: 0.75rem;"></i>
+                                                Mark Paid
+                                            </button>
+                                        </form>
+                                    }
+
+                                    @if (canCancel)
+                                    {
+                                        <button type="button"
+                                                class="btn d-inline-flex align-items-center gap-1 px-3 py-1 rounded-2 fw-medium"
+                                                style="background-color: rgba(239,68,68,0.10); border: 1px solid rgba(239,68,68,0.3); color: #FCA5A5; font-size: 0.75rem;"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#cancelModal"
+                                                data-reservation-id="@res.Id">
+                                            <i class="bi bi-x-circle" style="font-size: 0.75rem;"></i>
+                                            Cancel
+                                        </button>
+                                    }
+
+                                    @if (!canCancel && !canMarkPaid)
+                                    {
+                                        <span style="color: var(--border); font-size: 0.75rem;">—</span>
+                                    }
+
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+<!-- Cancel Confirmation Modal -->
+<div class="modal fade" id="cancelModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-bottom"
+                 style="border-color: var(--border) !important;">
+                <h5 class="modal-title fw-semibold" style="color: var(--foreground);">
+                    Cancel Reservation
+                </h5>
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="modal">
+                </button>
+            </div>
+            <div class="modal-body py-4">
+                <div class="d-flex align-items-center justify-content-center mb-4">
+                    <div class="d-flex align-items-center justify-content-center rounded-circle"
+                         style="width: 56px; height: 56px; background-color: rgba(239,68,68,0.15);">
+                        <i class="bi bi-exclamation-triangle"
+                           style="color: var(--destructive); font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+                <p class="text-center mb-0"
+                       style="color: var(--muted-foreground); font-size: 0.9rem;">
+                    Are you sure you want to cancel this reservation?
+                    This action cannot be undone.
+                </p>
+            </div>
+            <div class="modal-footer border-top"
+                 style="border-color: var(--border) !important;">
+                <button type="button"
+                        class="btn btn-secondary px-4"
+                        data-bs-dismiss="modal">
+                    Keep Reservation
+                </button>
+                <form asp-controller="AdminReservations"
+                      asp-action="Cancel"
+                      method="post"
+                      id="cancelForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="cancelReservationId" />
+                    <button type="submit"
+                            class="btn btn-danger px-4 fw-semibold">
+                        Confirm Cancellation
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const cancelModal = document.getElementById('cancelModal');
+        cancelModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const reservationId = button.getAttribute('data-reservation-id');
+            document.getElementById('cancelReservationId').value = reservationId;
+        });
+    </script>
+}
