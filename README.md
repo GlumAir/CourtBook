@@ -109,6 +109,7 @@ The following courts are seeded automatically:
 ---
 
 ## Project Structure
+```text
 CourtBook/
 ├── Controllers/        — All MVC controllers
 ├── Data/               — DbContext and DatabaseSeeder
@@ -119,6 +120,7 @@ CourtBook/
 ├── wwwroot/css/        — site.css (custom styles)
 ├── appsettings.json    — Configuration
 └── Program.cs          — App entry point and configuration
+```
 
 ---
 
