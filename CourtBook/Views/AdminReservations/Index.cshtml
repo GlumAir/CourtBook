@@ -85,6 +85,7 @@
                         class="form-select form-select-sm"
                         style="background-color: var(--secondary); border-color: var(--border); color: var(--foreground); border-radius: 0.75rem; width: auto;">
                     <option value="" selected="@(string.IsNullOrEmpty(filterStatus))">All Statuses</option>
+                    <option value="Reserved" selected="@(filterStatus == "Reserved")">Reserved</option>
                     <option value="Confirmed" selected="@(filterStatus == "Confirmed")">Confirmed</option>
                     <option value="Completed" selected="@(filterStatus == "Completed")">Completed</option>
                     <option value="Cancelled" selected="@(filterStatus == "Cancelled")">Cancelled</option>
@@ -174,9 +175,12 @@
                 <tbody>
                     @foreach (var res in Model)
                     {
-                        var canCancel = res.Status == CourtBook.Models.ReservationStatus.Confirmed;
+                        var canCancel = res.Status == CourtBook.Models.ReservationStatus.Confirmed
+                                     || res.Status == CourtBook.Models.ReservationStatus.Reserved;
                         var canMarkPaid = res.PaymentStatus == CourtBook.Models.PaymentStatus.Unpaid
                                        && res.Status != CourtBook.Models.ReservationStatus.Cancelled;
+                        var canMarkCompleted = res.Status == CourtBook.Models.ReservationStatus.Confirmed
+                                            && res.PaymentStatus == CourtBook.Models.PaymentStatus.Paid;
 
                         <tr>
                             <td class="px-4 py-3 text-nowrap"
@@ -226,6 +230,9 @@
                             <td class="px-4 py-3">
                                 @switch (res.Status)
                                 {
+                                    case CourtBook.Models.ReservationStatus.Reserved:
+                                        <span class="badge-reserved">Reserved</span>
+                                        break;
                                     case CourtBook.Models.ReservationStatus.Confirmed:
                                         <span class="badge-confirmed">Confirmed</span>
                                         break;
@@ -257,6 +264,23 @@
                                         </form>
                                     }
 
+                                    @if (canMarkCompleted)
+                                    {
+                                        <form asp-controller="AdminReservations"
+                                              asp-action="MarkCompleted"
+                                              method="post"
+                                              class="m-0">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@res.Id" />
+                                            <button type="submit"
+                                                    class="btn d-inline-flex align-items-center gap-1 px-3 py-1 rounded-2 fw-medium text-nowrap"
+                                                    style="background-color: rgba(22,163,74,0.10); border: 1px solid rgba(22,163,74,0.3); color: #86EFAC; font-size: 0.75rem;">
+                                                <i class="bi bi-check-circle" style="font-size: 0.75rem;"></i>
+                                                Completed
+                                            </button>
+                                        </form>
+                                    }
+
                                     @if (canCancel)
                                     {
                                         <button type="button"
@@ -270,7 +294,7 @@
                                         </button>
                                     }
 
-                                    @if (!canCancel && !canMarkPaid)
+                                    @if (!canCancel && !canMarkPaid && !canMarkCompleted)
                                     {
                                         <span style="color: var(--border); font-size: 0.75rem;">—</span>
                                     }

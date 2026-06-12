@@ -31,7 +31,7 @@ namespace CourtBook.Models
             = PaymentStatus.Unpaid;
 
         public ReservationStatus Status { get; set; }
-            = ReservationStatus.Confirmed;
+            = ReservationStatus.Reserved;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

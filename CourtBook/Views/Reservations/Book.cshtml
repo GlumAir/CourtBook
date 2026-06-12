@@ -6,13 +6,12 @@
 
 <div class="container-xl py-4">
 
-    <!-- Header -->
     <div class="mb-4">
         <a asp-controller="Courts" asp-action="Index"
-               class="d-inline-flex align-items-center gap-2 mb-3 text-decoration-none"
-               style="color: var(--muted-foreground); font-size: 0.875rem; transition: color 0.15s ease;"
-               onmouseover="this.style.color='var(--foreground)'"
-               onmouseout="this.style.color='var(--muted-foreground)'">
+           class="d-inline-flex align-items-center gap-2 mb-3 text-decoration-none"
+           style="color: var(--muted-foreground); font-size: 0.875rem; transition: color 0.15s ease;"
+           onmouseover="this.style.color='var(--foreground)'"
+           onmouseout="this.style.color='var(--muted-foreground)'">
             <i class="bi bi-chevron-left"></i>
             Back to Courts
         </a>
@@ -22,22 +21,18 @@
         <p class="mb-0" style="color: var(--muted-foreground);">@Model.CourtName</p>
     </div>
 
-    <!-- Validation Summary -->
     @if (!ViewData.ModelState.IsValid)
     {
         <div class="alert mb-4"
              style="background-color: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); color: #FCA5A5; border-radius: 0.5rem;">
-            <!-- Show both model-level and field-level errors so binding/parsing errors are visible -->
             <div asp-validation-summary="All"></div>
         </div>
     }
 
     <div class="row g-4">
 
-        <!-- Left Column: Date + Time Slots -->
         <div class="col-12 col-lg-7">
 
-            <!-- Date Picker Card -->
             <div class="rounded-3 border p-4 mb-4"
                  style="background-color: var(--card); border-color: var(--border) !important;">
                 <h2 class="fw-semibold d-flex align-items-center gap-2 mb-4"
@@ -62,7 +57,6 @@
                 </form>
             </div>
 
-            <!-- Time Slots Card -->
             @if (Model.SelectedDate.HasValue && Model.TimeSlots.Any())
             {
                 <div class="rounded-3 border p-4"
@@ -70,10 +64,10 @@
                     <h2 class="fw-semibold d-flex align-items-center gap-2 mb-1"
                         style="color: var(--foreground); font-size: 1.125rem;">
                         <i class="bi bi-clock" style="color: var(--primary);"></i>
-                        Select a Time Slot
+                        Select Time Slots
                     </h2>
                     <p class="mb-4" style="color: var(--muted-foreground); font-size: 0.875rem;">
-                        @Model.SelectedDate?.ToString("dddd, MMMM d, yyyy")
+                        You can select multiple hours/time blocks for your booking.
                     </p>
 
                     <div class="row g-3 mb-4">
@@ -83,38 +77,33 @@
                                 @if (slot.IsAvailable)
                                 {
                                     <button type="button"
-                                            class="time-slot w-100 slot-btn"
-                                            data-start="@slot.StartTime"
-                                            data-end="@slot.EndTime"
-                                            data-display-start="@slot.DisplayStart"
-                                            data-display-end="@slot.DisplayEnd"
-                                            onclick="selectSlot(this)">
-                                        @slot.DisplayStart
-                                        <span class="d-block" style="font-size: 0.75rem; opacity: 0.75;">
-                                            to @slot.DisplayEnd
-                                        </span>
+                                            class="time-slot w-100 slot-btn text-start p-3 position-relative border rounded-3"
+                                            style="background-color: transparent; color: var(--foreground); transition: all 0.2s;"
+                                            data-raw-value="@slot.StartTime-@slot.EndTime"
+                                            data-display-text="@slot.DisplayStart - @slot.DisplayEnd"
+                                            onclick="toggleSlotSelection(this)">
+                                        <div class="fw-semibold" style="font-size: 0.95rem;">@slot.DisplayStart</div>
+                                        <div style="font-size: 0.75rem; opacity: 0.7;">to @slot.DisplayEnd</div>
                                     </button>
                                 }
                                 else
                                 {
                                     <button type="button"
-                                            class="time-slot time-slot-taken w-100"
+                                            class="time-slot time-slot-taken w-100 text-start p-3 border rounded-3 opacity-50"
+                                            style="background-color: var(--secondary); color: var(--muted-foreground);"
                                             disabled>
-                                        @slot.DisplayStart
-                                        <span class="d-block" style="font-size: 0.75rem;">
-                                            to @slot.DisplayEnd
-                                        </span>
+                                        <div class="fw-semibold" style="font-size: 0.95rem;">@slot.DisplayStart</div>
+                                        <div style="font-size: 0.75rem;">to @slot.DisplayEnd</div>
                                     </button>
                                 }
                             </div>
                         }
                     </div>
 
-                    <!-- Legend -->
                     <div class="d-flex align-items-center gap-4"
                          style="font-size: 0.75rem; color: var(--muted-foreground);">
                         <div class="d-flex align-items-center gap-2">
-                            <div style="width: 12px; height: 12px; border-radius: 3px; border: 1px solid rgba(22,163,74,0.6);"></div>
+                            <div style="width: 12px; height: 12px; border-radius: 3px; border: 1px solid var(--border);"></div>
                             Available
                         </div>
                         <div class="d-flex align-items-center gap-2">
@@ -142,7 +131,6 @@
 
         </div>
 
-        <!-- Right Column: Booking Summary -->
         <div class="col-12 col-lg-5">
             <div class="rounded-3 border p-4"
                  style="background-color: var(--card); border-color: var(--border) !important; position: sticky; top: 80px;">
@@ -152,7 +140,6 @@
                     Booking Summary
                 </h2>
 
-                <!-- Summary Rows -->
                 <div class="d-flex flex-column gap-3 mb-4">
 
                     <div class="booking-summary-row">
@@ -190,33 +177,36 @@
                         </span>
                     </div>
 
-                    <div class="booking-summary-row">
-                        <span class="booking-summary-label">Time</span>
-                        <span class="booking-summary-value" id="summaryTime">—</span>
+                    <div class="booking-summary-row align-items-start">
+                        <span class="booking-summary-label pt-1">Selected Slots</span>
+                        <div class="d-flex flex-column align-items-end gap-1 text-end" id="summaryTimeSlots">
+                            <span class="text-muted" style="font-size: 0.875rem;">—</span>
+                        </div>
                     </div>
 
-                    <!-- Total Amount (shown after slot selected) -->
                     <div id="totalAmountRow"
                          class="border-top pt-3 mt-1 d-none"
                          style="border-color: var(--border) !important;">
                         <div class="d-flex align-items-center justify-content-between">
-                            <span class="text-uppercase fw-semibold"
-                                  style="color: var(--muted-foreground); font-size: 0.7rem; letter-spacing: 0.08em;">
-                                Total Amount
-                            </span>
-                            <span class="fw-bold" style="color: var(--foreground); font-size: 1.125rem;">
-                                &#8369;@Model.PricePerHour.ToString("N0")
+                            <div class="d-flex flex-column">
+                                <span class="text-uppercase fw-semibold"
+                                      style="color: var(--muted-foreground); font-size: 0.7rem; letter-spacing: 0.08em;">
+                                    Total Amount
+                                </span>
+                                <span class="text-muted" id="summaryHourlyMultiplier" style="font-size: 0.75rem;"></span>
+                            </div>
+                            <span class="fw-bold" style="color: var(--foreground); font-size: 1.25rem;" id="calculatedTotalPrice">
+                                &#8369;0
                             </span>
                         </div>
                         <p class="mb-0 mt-1"
-                               style="color: var(--muted-foreground); font-size: 0.75rem;">
+                           style="color: var(--muted-foreground); font-size: 0.75rem;">
                             Payment collected upon arrival
                         </p>
                     </div>
 
                 </div>
 
-                <!-- Confirm Button -->
                 <div class="border-top pt-4" style="border-color: var(--border) !important;">
                     <button type="button"
                             id="confirmBtn"
@@ -224,14 +214,15 @@
                             style="font-size: 1rem;"
                             disabled
                             data-bs-toggle="modal"
-                            data-bs-target="#confirmModal">
+                            data-bs-target="#confirmModal"
+                            onclick="prepareModal()">
                         Confirm Reservation
                     </button>
                     <div id="confirmHint"
                          class="d-flex align-items-center gap-2 mt-3"
                          style="color: var(--muted-foreground); font-size: 0.75rem;">
                         <i class="bi bi-info-circle"></i>
-                        Select a date and time slot to continue.
+                        Select at least one time slot block to continue.
                     </div>
                 </div>
 
@@ -241,7 +232,6 @@
     </div>
 </div>
 
-<!-- Confirmation Modal -->
 <div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -257,7 +247,8 @@
                 </button>
             </div>
             <div class="modal-body py-4">
-                <p style="color: var(--muted-foreground); font-size: 0.9rem;" id="modalDescription">
+                <p style="color: var(--muted-foreground); font-size: 0.9rem;">
+                    You are about to book @Model.CourtName. Please review your booking details below.
                 </p>
                 <div class="rounded-3 p-3 mt-3"
                      style="background-color: var(--secondary); border: 1px solid var(--border);">
@@ -270,16 +261,15 @@
                             <span style="color: var(--muted-foreground);">Date</span>
                             <span class="fw-medium" style="color: var(--foreground);" id="modalDate"></span>
                         </div>
-                        <div class="d-flex justify-content-between">
-                            <span style="color: var(--muted-foreground);">Time</span>
-                            <span class="fw-medium" style="color: var(--foreground);" id="modalTime"></span>
+                        <div class="d-flex justify-content-between align-items-start">
+                            <span style="color: var(--muted-foreground);">Time Slots</span>
+                            <div class="d-flex flex-column align-items-end gap-1 text-end fw-medium" style="color: var(--foreground);" id="modalTimeSlotsContainer">
+                            </div>
                         </div>
                         <div class="d-flex justify-content-between border-top pt-2"
                              style="border-color: var(--border) !important;">
-                            <span style="color: var(--muted-foreground);">Total</span>
-                            <span class="fw-bold" style="color: var(--foreground);">
-                                &#8369;@Model.PricePerHour.ToString("N0")
-                            </span>
+                            <span style="color: var(--muted-foreground);">Total Amount</span>
+                            <span class="fw-bold" style="color: var(--foreground);" id="modalTotalPrice"></span>
                         </div>
                     </div>
                 </div>
@@ -299,8 +289,9 @@
                     <input type="hidden" name="CourtId" value="@Model.CourtId" />
                     <input type="hidden" name="SelectedDate"
                            value="@Model.SelectedDate?.ToString("yyyy-MM-dd")" />
-                    <input type="hidden" name="SelectedStartTime" id="hiddenStartTime" />
-                    <input type="hidden" name="SelectedEndTime" id="hiddenEndTime" />
+                    
+                    <div id="hiddenSlotsFormPayload"></div>
+
                     <button type="submit"
                             class="btn btn-primary px-4 fw-semibold">
                         Confirm Booking
@@ -313,78 +304,94 @@
 
 @section Scripts {
     <script>
-        let selectedStart = null;
-        let selectedEnd = null;
-        let selectedDisplayStart = null;
-        let selectedDisplayEnd = null;
+        // Array tracks our chosen values string arrays ["09:00-10:00", "10:00-11:00"]
+        let selectedSlotsList = [];
+        const baseRate = parseFloat("@Model.PricePerHour");
 
         const confirmBtn = document.getElementById('confirmBtn');
         const confirmHint = document.getElementById('confirmHint');
-        const summaryTime = document.getElementById('summaryTime');
+        const summaryTimeSlots = document.getElementById('summaryTimeSlots');
         const totalAmountRow = document.getElementById('totalAmountRow');
-        const hiddenStartTime = document.getElementById('hiddenStartTime');
-        const hiddenEndTime = document.getElementById('hiddenEndTime');
-        const modalDate = document.getElementById('modalDate');
-        const modalTime = document.getElementById('modalTime');
-        const modalDescription = document.getElementById('modalDescription');
+        const calculatedTotalPrice = document.getElementById('calculatedTotalPrice');
+        const summaryHourlyMultiplier = document.getElementById('summaryHourlyMultiplier');
+        const hiddenSlotsFormPayload = document.getElementById('hiddenSlotsFormPayload');
 
-        function selectSlot(btn) {
-            // Deselect all
-            document.querySelectorAll('.slot-btn').forEach(b => {
-                b.classList.remove('time-slot-selected');
-                b.classList.add('time-slot');
-            });
+        function toggleSlotSelection(btn) {
+            const rawVal = btn.dataset.rawValue;
+            const displayText = btn.dataset.displayText;
 
-            const start = btn.dataset.start;
-            const end = btn.dataset.end;
-            const dispStart = btn.dataset.displayStart;
-            const dispEnd = btn.dataset.displayEnd;
+            const index = selectedSlotsList.findIndex(item => item.rawValue === rawVal);
 
-            // Toggle off if same slot
-            if (selectedStart === start) {
-                selectedStart = null;
-                selectedEnd = null;
-                selectedDisplayStart = null;
-                selectedDisplayEnd = null;
-                updateSummary();
-                return;
+            if (index > -1) {
+                // Already selected, deselect it
+                selectedSlotsList.splice(index, 1);
+                btn.style.backgroundColor = 'transparent';
+                btn.style.borderColor = 'var(--border)';
+            } else {
+                // Select it
+                selectedSlotsList.push({ rawValue: rawVal, displayText: displayText });
+                btn.style.backgroundColor = 'var(--primary)';
+                btn.style.borderColor = 'var(--primary)';
             }
 
-            selectedStart = start;
-            selectedEnd = end;
-            selectedDisplayStart = dispStart;
-            selectedDisplayEnd = dispEnd;
-
-            btn.classList.add('time-slot-selected');
-            btn.classList.remove('time-slot');
-
-            updateSummary();
+            updateSummaryLayout();
         }
 
-        function updateSummary() {
-            if (selectedStart && selectedEnd) {
-                const timeText = `${selectedDisplayStart} – ${selectedDisplayEnd}`;
-                summaryTime.textContent = timeText;
+        function updateSummaryLayout() {
+            // Clear prior values
+            summaryTimeSlots.innerHTML = '';
+
+            if (selectedSlotsList.length > 0) {
+                // Populate display blocks on side panel
+                selectedSlotsList.forEach(slot => {
+                    const el = document.createElement('span');
+                    el.className = 'fw-medium text-foreground';
+                    el.style.fontSize = '0.9rem';
+                    el.textContent = slot.displayText;
+                    summaryTimeSlots.appendChild(el);
+                });
+
+                // Calculate total amounts base values
+                const totalCost = baseRate * selectedSlotsList.length;
+                
+                summaryHourlyMultiplier.textContent = `₱${baseRate.toLocaleString()} × ${selectedSlotsList.length} hour(s)`;
+                calculatedTotalPrice.innerHTML = `&#8369;${totalCost.toLocaleString('en-US', { minimumFractionDigits: 0 })}`;
+                
                 totalAmountRow.classList.remove('d-none');
                 confirmBtn.disabled = false;
                 confirmHint.style.display = 'none';
-                hiddenStartTime.value = selectedStart;
-                hiddenEndTime.value = selectedEnd;
-
-                // Update modal content
-                const dateEl = document.getElementById('summaryDate');
-                modalDate.textContent = dateEl ? dateEl.textContent.trim() : '';
-                modalTime.textContent = timeText;
-                modalDescription.textContent =
-                    `You are about to book @Model.CourtName. Please review your booking details below.`;
             } else {
-                summaryTime.textContent = '—';
+                summaryTimeSlots.innerHTML = '<span class="text-muted" style="font-size: 0.875rem;">—</span>';
                 totalAmountRow.classList.add('d-none');
                 confirmBtn.disabled = true;
                 confirmHint.style.display = 'flex';
-                hiddenStartTime.value = '';
-                hiddenEndTime.value = '';
             }
+        }
+
+        function prepareModal() {
+            const dateEl = document.getElementById('summaryDate');
+            document.getElementById('modalDate').textContent = dateEl ? dateEl.textContent.trim() : '';
+            
+            const modalTimeSlotsContainer = document.getElementById('modalTimeSlotsContainer');
+            modalTimeSlotsContainer.innerHTML = '';
+            hiddenSlotsFormPayload.innerHTML = '';
+
+            selectedSlotsList.forEach(slot => {
+                // 1. Append textual representation to view model popup UI
+                const textSpan = document.createElement('span');
+                textSpan.textContent = slot.displayText;
+                modalTimeSlotsContainer.appendChild(textSpan);
+
+                // 2. Build the array name inputs match framework target endpoints parameter name exactly
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'selectedSlots';
+                hiddenInput.value = slot.rawValue;
+                hiddenSlotsFormPayload.appendChild(hiddenInput);
+            });
+
+            // Set pop price label
+            document.getElementById('modalTotalPrice').textContent = calculatedTotalPrice.textContent;
         }
     </script>
 }

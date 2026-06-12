@@ -71,13 +71,15 @@ namespace CourtBook.Controllers
             {
                 TodaysReservationCount = await _context
                     .Reservations
-                    .CountAsync(r => r.Date == today),
+                    .CountAsync(r => r.Date == today &&
+                                     r.Status != ReservationStatus.Cancelled),
                 TotalActiveCourts = await _context.Courts
                     .CountAsync(c => c.IsActive),
                 TotalRegisteredUsers = totalUsers,
                 ReservationsThisWeek = await _context
                     .Reservations
-                    .CountAsync(r => r.Date >= weekStart),
+                    .CountAsync(r => r.Date >= weekStart &&
+                                     r.Status != ReservationStatus.Cancelled),
                 // compute total revenue from paid reservations (only confirmed/paid)
                 TotalRevenue = await _context.Reservations
                     .Where(r => r.PaymentStatus == PaymentStatus.Paid)

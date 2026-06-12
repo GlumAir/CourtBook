@@ -18,11 +18,9 @@ namespace CourtBook.ViewModels
         [Required]
         public DateOnly? SelectedDate { get; set; }
 
-        [Required]
-        public string SelectedStartTime { get; set; }
+        public string? SelectedStartTime { get; set; }
 
-        [Required]
-        public string SelectedEndTime { get; set; }
+        public string? SelectedEndTime { get; set; }
 
         public List<TimeSlotViewModel> TimeSlots { get; set; }
             = new();
