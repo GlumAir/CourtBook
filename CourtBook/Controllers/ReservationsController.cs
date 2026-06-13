@@ -50,7 +50,7 @@ namespace CourtBook.Controllers
                 .Where(r =>
                     r.CourtId == courtId &&
                     r.Date == selectedDate &&
-                    r.Status == ReservationStatus.Confirmed)
+                    (r.Status == ReservationStatus.Confirmed || r.Status == ReservationStatus.Reserved))
                 .ToListAsync();
 
             var slots = _timeSlotService.GenerateSlots(
@@ -74,9 +74,9 @@ namespace CourtBook.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Book(BookCourtViewModel model)
+        public async Task<IActionResult> Book(BookCourtViewModel model, List<string> selectedSlots)
         {
-            // try to bind SelectedDate from the raw form if model binder didn't set it (DateOnly may not bind)
+            // Try to bind SelectedDate from the raw form if model binder didn't set it
             if (model.SelectedDate == null)
             {
                 if (Request.Form.TryGetValue("SelectedDate", out var sd) && !string.IsNullOrEmpty(sd))
@@ -84,37 +84,22 @@ namespace CourtBook.Controllers
                     if (DateOnly.TryParse(sd, out var parsed))
                     {
                         model.SelectedDate = parsed;
-                        // clear any modelstate errors for SelectedDate created by the default binder
                         ModelState.Remove(nameof(model.SelectedDate));
                     }
                 }
             }
 
-            // Basic validation: ensure date and times exist
+            // Basic validation: ensure date exists and at least one slot is selected
             if (model.SelectedDate == null)
                 ModelState.AddModelError("SelectedDate", "Date is required.");
 
-            // Trim posted times to avoid whitespace mismatches
-            model.SelectedStartTime = model.SelectedStartTime?.Trim();
-            model.SelectedEndTime = model.SelectedEndTime?.Trim();
-
-            if (string.IsNullOrEmpty(model.SelectedStartTime) || string.IsNullOrEmpty(model.SelectedEndTime))
-                ModelState.AddModelError("", "Please select a time slot.");
+            if (selectedSlots == null || !selectedSlots.Any())
+                ModelState.AddModelError("", "Please select at least one time slot.");
 
             if (!ModelState.IsValid)
             {
-                _logger?.LogWarning("Invalid model state when booking reservation. Errors: {Errors}. Posted values: CourtId={CourtId}, SelectedDate={SelectedDate}, Start={Start}, End={End}",
-                    string.Join(";", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)),
-                    model?.CourtId, model?.SelectedDate, model?.SelectedStartTime, model?.SelectedEndTime);
-                await PopulateBookModel(model);
-                return View(model);
-            }
-
-            // ✅ Parse the strings first
-            if (!TimeSpan.TryParse(model.SelectedStartTime, out var startTime) ||
-                !TimeSpan.TryParse(model.SelectedEndTime, out var endTime))
-            {
-                ModelState.AddModelError("", "Invalid time format.");
+                _logger?.LogWarning("Invalid model state when booking multi-reservation. Posted values: CourtId={CourtId}, SelectedDate={SelectedDate}",
+                    model?.CourtId, model?.SelectedDate);
                 await PopulateBookModel(model);
                 return View(model);
             }
@@ -123,90 +108,84 @@ namespace CourtBook.Controllers
             if (court == null)
                 return NotFound();
 
-            // Convert TimeSpan to the same string format used in Reservation ("hh:mm")
-            var startTimeStr = startTime.ToString(@"hh\:mm");
-            var endTimeStr = endTime.ToString(@"hh\:mm");
-
-            // ✅ Use the formatted string for comparisons against the stored string
-            var conflict = await _context.Reservations
-                .AnyAsync(r =>
-                    r.CourtId == model.CourtId &&
-                    r.Date == model.SelectedDate &&
-                    r.StartTime == startTimeStr &&
-                    r.EndTime == endTimeStr &&
-                    r.Status == ReservationStatus.Confirmed);
-
-            if (conflict)
-            {
-                ModelState.AddModelError("", "Selected time slot is no longer available.");
-                await PopulateBookModel(model);
-                return View(model);
-            }
-
             var userId = _userManager.GetUserId(User);
             if (string.IsNullOrEmpty(userId))
             {
                 return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("Book", "Reservations", new { courtId = model.CourtId }) });
             }
 
-            // ✅ Store times as strings to match the Reservation model
-            var reservation = new Reservation
-            {
-                UserId = userId,
-                CourtId = model.CourtId,
-                Date = model.SelectedDate.Value,
-                StartTime = startTimeStr,
-                EndTime = endTimeStr,
-                TotalAmount = court.PricePerHour,
-                PaymentStatus = PaymentStatus.Unpaid,
-                Status = ReservationStatus.Confirmed,
-                CreatedAt = DateTime.UtcNow
-            };
+            int successfulBookings = 0;
 
-            // Use a transaction and re-check conflicts immediately before saving to avoid races
+            // Use a transaction to safely apply batch additions and completely avoid race conditions
             using (var tx = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    // re-check conflict right before insert
-                    var stillConflict = await _context.Reservations
-                        .AnyAsync(r =>
-                            r.CourtId == model.CourtId &&
-                            r.Date == model.SelectedDate &&
-                            r.StartTime == startTimeStr &&
-                            r.EndTime == endTimeStr &&
-                            r.Status == ReservationStatus.Confirmed);
-
-                    if (stillConflict)
+                    foreach (var slotString in selectedSlots)
                     {
-                        // someone reserved while the user was confirming
-                        ModelState.AddModelError("", "Selected time slot is no longer available.");
+                        // Splits "hh:mm-hh:mm" format cleanly into individual tokens
+                        var parts = slotString.Split('-');
+                        if (parts.Length != 2) continue;
+
+                        if (!TimeSpan.TryParse(parts[0].Trim(), out var startTime) ||
+                            !TimeSpan.TryParse(parts[1].Trim(), out var endTime))
+                        {
+                            continue;
+                        }
+
+                        var startTimeStr = startTime.ToString(@"hh\:mm");
+                        var endTimeStr = endTime.ToString(@"hh\:mm");
+
+                        // Double check availability within transaction boundaries
+                        var isConflict = await _context.Reservations
+                            .AnyAsync(r =>
+                                r.CourtId == model.CourtId &&
+                                r.Date == model.SelectedDate &&
+                                r.StartTime == startTimeStr &&
+                                r.EndTime == endTimeStr &&
+                                (r.Status == ReservationStatus.Confirmed || r.Status == ReservationStatus.Reserved));
+
+                        if (isConflict) continue; // Skip taken blocks smoothly
+
+                        var reservation = new Reservation
+                        {
+                            UserId = userId,
+                            CourtId = model.CourtId,
+                            Date = model.SelectedDate.Value,
+                            StartTime = startTimeStr,
+                            EndTime = endTimeStr,
+                            TotalAmount = court.PricePerHour,
+                            PaymentStatus = PaymentStatus.Unpaid,
+                            Status = ReservationStatus.Reserved,
+                            CreatedAt = DateTime.UtcNow
+                        };
+
+                        _context.Reservations.Add(reservation);
+                        successfulBookings++;
+                    }
+
+                    if (successfulBookings > 0)
+                    {
+                        await _context.SaveChangesAsync();
+                        await tx.CommitAsync();
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "All selected slots are no longer available.");
                         await PopulateBookModel(model);
                         return View(model);
                     }
-
-                    _context.Reservations.Add(reservation);
-                    await _context.SaveChangesAsync();
-                    await tx.CommitAsync();
-                }
-                catch (DbUpdateException ex)
-                {
-                    _logger?.LogError(ex, "DbUpdateException saving reservation for user {UserId}", userId);
-                    // possible unique constraint race or DB issue
-                    ModelState.AddModelError("", "Unable to save reservation. Please try again.");
-                    await PopulateBookModel(model);
-                    return View(model);
                 }
                 catch (Exception ex)
                 {
-                    _logger?.LogError(ex, "Unexpected error saving reservation for user {UserId}", userId);
-                    ModelState.AddModelError("", "An unexpected error occurred.");
+                    _logger?.LogError(ex, "Unexpected error saving batch reservations for user {UserId}", userId);
+                    ModelState.AddModelError("", "An unexpected error occurred while saving your reservations.");
                     await PopulateBookModel(model);
                     return View(model);
                 }
             }
 
-            TempData["Success"] = "Reservation confirmed successfully.";
+            TempData["Success"] = $"Successfully reserved {successfulBookings} time slot(s).";
             return RedirectToAction("Index");
         }
 
@@ -225,7 +204,8 @@ namespace CourtBook.Controllers
             var upcoming = all
                 .Where(r =>
                     r.Date >= today &&
-                    r.Status == ReservationStatus.Confirmed)
+                    (r.Status == ReservationStatus.Confirmed ||
+                     r.Status == ReservationStatus.Reserved))
                 .OrderBy(r => r.Date)
                 .Select(r => MapToCard(r))
                 .ToList();
@@ -293,7 +273,7 @@ namespace CourtBook.Controllers
             var selectedDate = model.SelectedDate ?? DateOnly.FromDateTime(DateTime.Today);
 
             var existing = await _context.Reservations
-                .Where(r => r.CourtId == model.CourtId && r.Date == selectedDate && r.Status == ReservationStatus.Confirmed)
+                .Where(r => r.CourtId == model.CourtId && r.Date == selectedDate && (r.Status == ReservationStatus.Confirmed || r.Status == ReservationStatus.Reserved))
                 .ToListAsync();
 
             var slots = _timeSlotService.GenerateSlots(court.OperatingHours, selectedDate, existing);
@@ -305,7 +285,5 @@ namespace CourtBook.Controllers
             model.SelectedDate = selectedDate;
             model.TimeSlots = slots;
         }
-
-
     }
 }

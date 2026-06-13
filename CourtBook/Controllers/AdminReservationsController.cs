@@ -103,6 +103,7 @@ namespace CourtBook.Controllers
             if (reservation == null) return NotFound();
 
             reservation.PaymentStatus = PaymentStatus.Paid;
+            reservation.Status = ReservationStatus.Confirmed;
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "Reservation marked as paid.";
@@ -125,6 +126,21 @@ namespace CourtBook.Controllers
             TempData["Success"] =
                 "Reservation cancelled successfully.";
 
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MarkCompleted(int id)
+        {
+            var reservation = await _context.Reservations
+                .FindAsync(id);
+
+            if (reservation == null) return NotFound();
+
+            reservation.Status = ReservationStatus.Completed;
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Reservation marked as completed.";
             return RedirectToAction("Index");
         }
     }

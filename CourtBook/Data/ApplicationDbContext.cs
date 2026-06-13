@@ -66,7 +66,7 @@ namespace CourtBook.Data
                 entity.Property(r => r.Status)
                     .HasConversion<int>()
                     .HasDefaultValue(
-                        ReservationStatus.Confirmed);
+                        ReservationStatus.Reserved);
 
                 entity.Property(r => r.PaymentStatus)
                     .HasConversion<int>()
