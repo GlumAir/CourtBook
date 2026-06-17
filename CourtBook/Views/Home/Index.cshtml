@@ -35,12 +35,14 @@
                 width: 100%;
                 height: 100%;
                 object-fit: cover;
+                filter: brightness(0.60) contrast(1.05) saturate(0.95);
             }
 
             .hero-overlay {
                 position: absolute;
                 inset: 0;
-                background: linear-gradient( to bottom, rgba(15, 23, 42, 0.70), rgba(15, 23, 42, 0.60), rgba(15, 23, 42, 1) );
+                z-index: 1;
+                background: linear-gradient( to bottom, rgba(2, 6, 23, 0.72), rgba(2, 6, 23, 0.78), rgba(2, 6, 23, 0.92) );
             }
 
             .hero-badge {
@@ -117,6 +119,111 @@
                     color: #ffffff;
                 }
 
+            .hero-section .carousel,
+            .hero-section .carousel-inner,
+            .hero-section .carousel-item {
+                height: 100%;
+            }
+
+            .hero-section .carousel-control-prev,
+            .hero-section .carousel-control-next {
+                z-index: 2;
+            }
+
+            .hero-section .carousel-indicators {
+                z-index: 3;
+                bottom: 7.5rem;
+            }
+
+                .hero-section .carousel-indicators [data-bs-target] {
+                    width: 10px;
+                    height: 10px;
+                    border-radius: 50%;
+                }
+
+            .hero-section .carousel-item {
+                transition: transform 1.4s ease-in-out;
+            }
+
+            .hero-section .carousel-control-prev,
+            .hero-section .carousel-control-next {
+                width: 6%;
+            }
+
+            .hero-section .carousel-control-prev-icon,
+            .hero-section .carousel-control-next-icon {
+                width: 3rem;
+                height: 3rem;
+                border-radius: 50%;
+                background-color: rgba(255, 255, 255, 0.12);
+                backdrop-filter: blur(8px);
+            }
+
+            .court-pulse-section {
+                position: relative;
+                z-index: 5;
+                margin-top: -3.5rem;
+                padding: 0 1.5rem 4rem;
+            }
+
+            .court-pulse-panel {
+                max-width: 1320px;
+                margin: 0 auto;
+                background: rgba(30, 41, 59, 0.98);
+                border: 1px solid rgba(255, 255, 255, 0.12);
+                border-radius: 1.25rem;
+                padding: 2.5rem 2.5rem;
+                box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            }
+
+            .pulse-card {
+                text-align: center;
+                padding: 0.75rem 1rem;
+            }
+
+            .pulse-icon {
+                width: 58px;
+                height: 58px;
+                margin: 0 auto 1rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #a3e635;
+                font-size: 2.4rem;
+            }
+
+            .pulse-title {
+                color: #ffffff;
+                font-size: 0.95rem;
+                font-weight: 800;
+                text-transform: uppercase;
+                margin-bottom: 0.4rem;
+            }
+
+            .pulse-value {
+                color: #ffffff;
+                font-size: 0.95rem;
+                font-weight: 700;
+                margin-bottom: 0.35rem;
+            }
+
+            .pulse-sub {
+                color: #cbd5e1;
+                font-size: 0.88rem;
+                line-height: 1.4;
+            }
+
+            @@media (max-width: 768px) {
+                .court-pulse-section {
+                    margin-top: -2rem;
+                    padding: 0 1rem 3rem;
+                }
+
+                .court-pulse-panel {
+                    padding: 1.5rem 1rem;
+                }
+            }
+
             .feature-card {
                 background-color: var(--card);
                 border: 1px solid var(--border);
@@ -184,188 +291,242 @@
     </style>
 
     <style>
-    /* Scoped to avoid conflicts with global styles */
-    .team-card {
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 1.25rem;
-        overflow: hidden;
-        transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-        position: relative;
-    }
-    .team-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 16px 32px rgba(0, 0, 0, 0.1);
-        border-color: var(--primary);
-    }
-    .team-card-accent {
-        height: 5px;
-        background: linear-gradient(90deg, var(--primary), #6366f1);
-    }
-    .team-avatar-wrapper {
-        width: 100px;
-        height: 100px;
-        margin: -28px auto 1rem;
-        position: relative;
-        z-index: 2;
-        border-radius: 1rem;
-        padding: 4px;
-        background: var(--card);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-    }
-    .team-avatar {
-        width: 100%;
-        height: 100%;
-        border-radius: 0.75rem;
-        object-fit: cover;
-        background-color: var(--secondary);
-        display: block;
-    }
-    .team-card-body {
-        padding: 0.25rem 1.5rem 1.75rem;
-        text-align: center;
-    }
-    .team-name {
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: var(--foreground);
-        margin-bottom: 0.25rem;
-    }
-    .team-role {
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: var(--primary);
-        margin-bottom: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.06em;
-    }
-    .team-bio {
-        font-size: 0.9rem;
-        color: var(--muted-foreground);
-        line-height: 1.55;
-        margin: 0;
-    }
-</style>
+            /* Scoped to avoid conflicts with global styles */
+            .team-card {
+                position: relative;
+                height: 520px;
+                border-radius: 2rem 0 2rem 0;
+                overflow: hidden;
+                background: #050505;
+                border: 1px solid transparent;
+                display: flex;
+                flex-direction: column;
+                transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            }
+
+                .team-card:hover {
+                    transform: translateY(-8px);
+                    border: 1px solid rgba(22, 163, 74, 0.85);
+                    box-shadow: 0 0 0 1px rgba(22, 163, 74, 0.45), 0 0 24px rgba(22, 163, 74, 0.35), 0 16px 32px rgba(0, 0, 0, 0.22);
+                }
+
+            .team-card-accent {
+                display: none;
+            }
+
+            .team-avatar-wrapper {
+                width: 100%;
+                height: 68%;
+                margin: 0;
+                position: relative;
+                z-index: 1;
+                border-radius: 0;
+                padding: 0;
+                background: #f8f1df;
+                box-shadow: none;
+                overflow: hidden;
+            }
+
+            .team-avatar {
+                width: 100%;
+                height: 100%;
+                border-radius: 0;
+                object-fit: cover;
+                object-position: top center;
+                background-color: var(--secondary);
+                display: block;
+            }
+
+            .team-card-body {
+                position: relative;
+                z-index: 2;
+                height: 32%;
+                padding: 1rem 1.25rem 1.25rem;
+                text-align: left;
+                background: linear-gradient( to bottom, rgba(0, 0, 0, 0.92), rgba(0, 0, 0, 1) );
+            }
+
+            .team-name {
+                font-size: 1rem;
+                font-weight: 700;
+                color: #ffffff;
+                margin-bottom: 0.15rem;
+                line-height: 1.2;
+            }
+
+            .team-role {
+                font-size: 0.72rem;
+                font-weight: 600;
+                color: #22c55e;
+                margin-bottom: 0.5rem;
+                text-transform: none;
+                letter-spacing: 0;
+            }
+
+            .team-bio {
+                font-size: 0.76rem;
+                color: rgba(255, 255, 255, 0.88);
+                line-height: 1.4;
+                margin: 0;
+            }
+
+            .team-section .row > div:nth-child(even) .team-avatar-wrapper {
+                background: #dce7f7;
+            }
+
+            @@media (max-width: 575.98px) {
+                .team-card {
+                    height: 560px;
+                }
+            }
+    </style>
 
 
-<style>
-    /* Scoped to avoid conflicts */
-    .testi-card {
-        background-color: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 1rem;
-        padding: 2rem 1.5rem;
-        height: 100%;
-        position: relative;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .testi-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-    }
-    .testi-quote-icon {
-        font-size: 2.5rem;
-        color: var(--primary);
-        opacity: 0.2;
-        position: absolute;
-        top: 1.5rem;
-        left: 1.5rem;
-        line-height: 1;
-    }
-    .testi-stars {
-        color: #F59E0B; /* Amber for stars */
-        font-size: 0.875rem;
-        margin-bottom: 1rem;
-    }
-    .testi-text {
-        font-size: 1rem;
-        color: var(--foreground);
-        line-height: 1.6;
-        margin-bottom: 1.5rem;
-        position: relative;
-        z-index: 1;
-    }
-    .testi-author {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        border-top: 1px solid var(--border);
-        padding-top: 1rem;
-    }
-    .testi-avatar-sm {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background-color: var(--secondary);
-        color: var(--muted-foreground);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 0.875rem;
-    }
-    .testi-name {
-        font-weight: 600;
-        color: var(--foreground);
-        font-size: 0.95rem;
-    }
-    .testi-role {
-        font-size: 0.8rem;
-        color: var(--muted-foreground);
-    }
+    <style>
+            /* Scoped to avoid conflicts */
+            .testi-card {
+                background-color: var(--card);
+                border: 1px solid var(--border);
+                border-radius: 1rem;
+                padding: 2rem 1.5rem;
+                height: 100%;
+                position: relative;
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
 
+                .testi-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+                }
 
-</style>
+            .testi-quote-icon {
+                font-size: 2.5rem;
+                color: var(--primary);
+                opacity: 0.2;
+                position: absolute;
+                top: 1.5rem;
+                left: 1.5rem;
+                line-height: 1;
+            }
 
-<style>
-    .pulse-dot {
-        --pulse-r: 22;
-        --pulse-g: 163;
-        --pulse-b: 74;
-        --pulse-delay: 0s;
-        --pulse-size: 8px;
+            .testi-stars {
+                color: #F59E0B; /* Amber for stars */
+                font-size: 0.875rem;
+                margin-bottom: 1rem;
+            }
 
-        display: inline-block;
-        width: var(--pulse-size);
-        height: var(--pulse-size);
-        border-radius: 50%;
-        background-color: rgb(var(--pulse-r), var(--pulse-g), var(--pulse-b));
-        position: relative;
-        animation: pulse-ring 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-        animation-delay: var(--pulse-delay);
-        transform: translateZ(0);
-    }
+            .testi-text {
+                font-size: 1rem;
+                color: var(--foreground);
+                line-height: 1.6;
+                margin-bottom: 1.5rem;
+                position: relative;
+                z-index: 1;
+            }
 
-    .pulse-dot--green  { --pulse-r: 22;  --pulse-g: 163; --pulse-b: 74; }
-    .pulse-dot--yellow { --pulse-r: 245; --pulse-g: 158; --pulse-b: 11; --pulse-delay: 0.5s; }
-    .pulse-dot--red    { --pulse-r: 239; --pulse-g: 68;  --pulse-b: 68; --pulse-delay: 1s; }
+            .testi-author {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                border-top: 1px solid var(--border);
+                padding-top: 1rem;
+            }
 
-    /* 👇 Double @@ escapes the Razor parser */
-    @@keyframes pulse-ring {
-        0% {
-            transform: scale(1) translateZ(0);
-            box-shadow: 0 0 0 0 rgba(var(--pulse-r), var(--pulse-g), var(--pulse-b), 0.6);
-        }
-        65% {
-            transform: scale(1.25) translateZ(0);
-            box-shadow: 0 0 0 10px rgba(var(--pulse-r), var(--pulse-g), var(--pulse-b), 0);
-        }
-        100% {
-            transform: scale(1) translateZ(0);
-            box-shadow: 0 0 0 0 rgba(var(--pulse-r), var(--pulse-g), var(--pulse-b), 0);
-        }
-    }
+            .testi-avatar-sm {
+                width: 48px;
+                height: 48px;
+                border-radius: 50%;
+                overflow: hidden;
+                flex-shrink: 0;
+                background-color: var(--secondary);
+            }
 
-    @@media (prefers-reduced-motion: reduce) {
-        .pulse-dot {
-            animation: none;
-            box-shadow: 0 0 0 3px rgba(var(--pulse-r), var(--pulse-g), var(--pulse-b), 0.35);
-            transform: scale(1) translateZ(0);
-        }
-    }
-</style>
+            .testi-avatar-sm img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+             }
 
-<!-- Usage 
+            .testi-name {
+                font-weight: 600;
+                color: var(--foreground);
+                font-size: 0.95rem;
+            }
+
+            .testi-role {
+                font-size: 0.8rem;
+                color: var(--muted-foreground);
+            }
+
+    </style>
+
+    <style>
+            .pulse-dot {
+                --pulse-r: 22;
+                --pulse-g: 163;
+                --pulse-b: 74;
+                --pulse-delay: 0s;
+                --pulse-size: 8px;
+                display: inline-block;
+                width: var(--pulse-size);
+                height: var(--pulse-size);
+                border-radius: 50%;
+                background-color: rgb(var(--pulse-r), var(--pulse-g), var(--pulse-b));
+                position: relative;
+                animation: pulse-ring 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+                animation-delay: var(--pulse-delay);
+                transform: translateZ(0);
+            }
+
+            .pulse-dot--green {
+                --pulse-r: 22;
+                --pulse-g: 163;
+                --pulse-b: 74;
+            }
+
+            .pulse-dot--yellow {
+                --pulse-r: 245;
+                --pulse-g: 158;
+                --pulse-b: 11;
+                --pulse-delay: 0.5s;
+            }
+
+            .pulse-dot--red {
+                --pulse-r: 239;
+                --pulse-g: 68;
+                --pulse-b: 68;
+                --pulse-delay: 1s;
+            }
+
+            /* 👇 Double @@ escapes the Razor parser */
+            @@keyframes pulse-ring {
+                0% {
+                    transform: scale(1) translateZ(0);
+                    box-shadow: 0 0 0 0 rgba(var(--pulse-r), var(--pulse-g), var(--pulse-b), 0.6);
+                }
+
+                65% {
+                    transform: scale(1.25) translateZ(0);
+                    box-shadow: 0 0 0 10px rgba(var(--pulse-r), var(--pulse-g), var(--pulse-b), 0);
+                }
+
+                100% {
+                    transform: scale(1) translateZ(0);
+                    box-shadow: 0 0 0 0 rgba(var(--pulse-r), var(--pulse-g), var(--pulse-b), 0);
+                }
+            }
+
+            @@media (prefers-reduced-motion: reduce) {
+                .pulse-dot {
+                    animation: none;
+                    box-shadow: 0 0 0 3px rgba(var(--pulse-r), var(--pulse-g), var(--pulse-b), 0.35);
+                    transform: scale(1) translateZ(0);
+                }
+            }
+    </style>
+
+    <!-- Usage
 <span class="pulse-dot pulse-dot--green" aria-hidden="true"></span> Active
 <span class="pulse-dot pulse-dot--yellow" aria-hidden="true"></span> Pending
 <span class="pulse-dot pulse-dot--red" aria-hidden="true"></span> Alert
@@ -373,104 +534,135 @@
 
 
     <style>
-    .unwritten-rules {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 3rem 1.5rem;
-        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    }
+            .unwritten-rules {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 3rem 1.5rem;
+                font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            }
 
-    .unwritten-rules h2 {
-        font-size: clamp(1.75rem, 4vw, 2.25rem);
-        font-weight: 800;
-        margin: 0 0 2.5rem;
-        text-align: center;
-        color: #0f172a;
-        letter-spacing: -0.02em;
-    }
+                .unwritten-rules h2 {
+                    font-size: clamp(1.75rem, 4vw, 2.25rem);
+                    font-weight: 800;
+                    margin: 0 0 2.5rem;
+                    text-align: center;
+                    color: #0f172a;
+                    letter-spacing: -0.02em;
+                }
 
-    .rules-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 2rem;
-    }
+            .rules-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 2rem;
+            }
 
-    .rule-card {
-        background: #ffffff;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
-        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
-        display: flex;
-        flex-direction: column;
-        border: 1px solid #e2e8f0;
-    }
+            .rule-card {
+                background: #ffffff;
+                border-radius: 16px;
+                overflow: hidden;
+                box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;
+                display: flex;
+                flex-direction: column;
+                border: 1px solid #e2e8f0;
+            }
 
-    .rule-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 12px 24px -8px rgb(0 0 0 / 0.12), 0 4px 8px -4px rgb(0 0 0 / 0.08);
-    }
+                .rule-card:hover {
+                    transform: translateY(-6px);
+                    box-shadow: 0 12px 24px -8px rgb(0 0 0 / 0.12), 0 4px 8px -4px rgb(0 0 0 / 0.08);
+                }
 
-    .rule-image {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-        background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-        display: block;
-    }
+            .rule-image {
+                width: 100%;
+                height: 200px;
+                object-fit: cover;
+                background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+                display: block;
+            }
 
-    .rule-content {
-        padding: 1.5rem;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-    }
+            .rule-content {
+                padding: 1.5rem;
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+            }
 
-    .rule-badge {
-        display: inline-block;
-        background: #f1f5f9;
-        color: #475569;
-        font-size: 0.75rem;
-        font-weight: 700;
-        padding: 0.25rem 0.6rem;
-        border-radius: 8px;
-        width: fit-content;
-        margin-bottom: 0.75rem;
-        letter-spacing: 0.05em;
-    }
+            .rule-badge {
+                display: inline-block;
+                background: #f1f5f9;
+                color: #475569;
+                font-size: 0.75rem;
+                font-weight: 700;
+                padding: 0.25rem 0.6rem;
+                border-radius: 8px;
+                width: fit-content;
+                margin-bottom: 0.75rem;
+                letter-spacing: 0.05em;
+            }
 
-    .rule-content h3 {
-        margin: 0 0 0.5rem;
-        font-size: 1.25rem;
-        font-weight: 700;
-        color: #0f172a;
-        line-height: 1.3;
-    }
+            .rule-content h3 {
+                margin: 0 0 0.5rem;
+                font-size: 1.25rem;
+                font-weight: 700;
+                color: #0f172a;
+                line-height: 1.3;
+            }
 
-    .rule-content p {
-        margin: 0;
-        color: #475569;
-        line-height: 1.6;
-        flex: 1;
-    }
+            .rule-content p {
+                margin: 0;
+                color: #475569;
+                line-height: 1.6;
+                flex: 1;
+            }
 
-    /* 👇 Razor-safe media queries */
-    @@media (prefers-color-scheme: dark) {
-        .unwritten-rules h2 { color: #f8fafc; }
-        .rule-card { background: #1e293b; border-color: #334155; }
-        .rule-badge { background: #334155; color: #cbd5e1; }
-        .rule-content h3 { color: #f8fafc; }
-        .rule-content p { color: #94a3b8; }
-        .rule-image { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
-    }
+            /* 👇 Razor-safe media queries */
+            @@media (prefers-color-scheme: dark) {
+                .unwritten-rules h2 {
+                    color: #f8fafc;
+                }
 
-    @@media (max-width: 640px) {
-        .unwritten-rules { padding: 2rem 1rem; }
-        .rules-grid { grid-template-columns: 1fr; gap: 1.5rem; }
-        .rule-image { height: 180px; }
-        .rule-content { padding: 1.25rem; }
-    }
-</style>
+                .rule-card {
+                    background: #1e293b;
+                    border-color: #334155;
+                }
+
+                .rule-badge {
+                    background: #334155;
+                    color: #cbd5e1;
+                }
+
+                .rule-content h3 {
+                    color: #f8fafc;
+                }
+
+                .rule-content p {
+                    color: #94a3b8;
+                }
+
+                .rule-image {
+                    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+                }
+            }
+
+            @@media (max-width: 640px) {
+                .unwritten-rules {
+                    padding: 2rem 1rem;
+                }
+
+                .rules-grid {
+                    grid-template-columns: 1fr;
+                    gap: 1.5rem;
+                }
+
+                .rule-image {
+                    height: 180px;
+                }
+
+                .rule-content {
+                    padding: 1.25rem;
+                }
+            }
+    </style>
 
 
 
@@ -491,9 +683,10 @@
         <div class="d-flex align-items-center justify-content-between">
             <!-- Logo -->
             <div class="d-flex align-items-center gap-2">
-                <div class="d-flex align-items-center justify-content-center rounded-2 p-2"
-                     style="background-color: var(--primary);">
-                    <i class="bi bi-trophy-fill text-white" style="font-size: 1rem;"></i>
+                <div class="d-flex align-items-center justify-content-center rounded-2 p-2" ;">
+                    <img src="~/images/CourtBookLogo.png"
+                         alt="CourtBook Logo"
+                         style="height: 60px; width: auto;" />
                 </div>
                 <span class="fw-bold text-white" style="font-size: 1.125rem;">CourtBook</span>
             </div>
@@ -501,11 +694,11 @@
             <!-- Auth Buttons -->
             <div class="d-flex gap-2">
                 <a asp-controller="Account" asp-action="Login"
-                       class="landing-nav-btn-outline">
+                   class="landing-nav-btn-outline">
                     Login
                 </a>
                 <a asp-controller="Account" asp-action="Register"
-                       class="landing-nav-btn-primary">
+                   class="landing-nav-btn-primary">
                     Register
                 </a>
             </div>
@@ -514,9 +707,90 @@
 
     <!-- Hero Section -->
     <section class="hero-section">
-        <img src="https://images.unsplash.com/photo-1775993167393-f2add1f8eec2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080&q=80"
-             alt="Badminton and Pickleball Court"
-             class="hero-image" />
+
+        <!-- Hero Background Carousel -->
+        <div id="heroCarousel"
+             class="carousel slide position-absolute top-0 start-0 w-100 h-100"
+             data-bs-ride="carousel"
+             data-bs-interval="5000">
+
+            <!-- Carousel Indicators -->
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="3" aria-label="Slide 4"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="4" aria-label="Slide 5"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="5" aria-label="Slide 6"></button>
+            </div>
+
+            <!-- Carousel Images -->
+            <div class="carousel-inner h-100">
+
+                <!-- Slide 1 -->
+                <div class="carousel-item active h-100">
+                    <img src="~/images/hero/Hero1.png"
+                         alt="Badminton Court"
+                         class="hero-image" />
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="carousel-item h-100">
+                    <img src="~/images/hero/Hero2.png"
+                         alt="Pickleball Court"
+                         class="hero-image" />
+                </div>
+
+                <!-- Slide 3 -->
+                <div class="carousel-item h-100">
+                    <img src="~/images/hero/Hero3.png"
+                         alt="Court Facility"
+                         class="hero-image" />
+                </div>
+
+                <!-- Slide 4 -->
+                <div class="carousel-item h-100">
+                    <img src="~/images/hero/Hero4.png"
+                         alt="Players on Court"
+                         class="hero-image" />
+                </div>
+
+                <!-- Slide 5 -->
+                <div class="carousel-item h-100">
+                    <img src="~/images/hero/Hero5.png"
+                         alt="Players on Court"
+                         class="hero-image" />
+                </div>
+
+                <!-- Slide 6 -->
+                <div class="carousel-item h-100">
+                    <img src="~/images/hero/Hero6.png"
+                         alt="Players on Court"
+                         class="hero-image" />
+                </div>
+
+            </div>
+
+            <!-- Carousel Previous Button -->
+            <button class="carousel-control-prev"
+                    type="button"
+                    data-bs-target="#heroCarousel"
+                    data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+
+            <!-- Carousel Next Button -->
+            <button class="carousel-control-next"
+                    type="button"
+                    data-bs-target="#heroCarousel"
+                    data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+
+        </div>
+
         <div class="hero-overlay"></div>
 
         <div class="position-relative z-1 text-center px-4 w-100" style="max-width: 900px; margin: 0 auto;">
@@ -537,12 +811,12 @@
 
             <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
                 <a asp-controller="Account" asp-action="Register"
-                       class="btn-hero-primary">
+                   class="btn-hero-primary">
                     Register Now
                     <i class="bi bi-chevron-right"></i>
                 </a>
                 <a asp-controller="Account" asp-action="Login"
-                       class="btn-hero-secondary">
+                   class="btn-hero-secondary">
                     Login
                 </a>
             </div>
@@ -551,40 +825,57 @@
 
 
     <!-- Court Pulse -->
-<section class="py-4">
-    <div class="container-xl">
-        <div class="row g-3">
-            <div class="col-12 col-sm-6 col-lg-3">
-                <div class="pulse-card">
-                    <div class="pulse-title">Court 1 Status</div>
-                    <div class="pulse-value"><span class="pulse-dot pulse-green"></span> Available</div>
-                    <div class="pulse-sub">3 prime slots remaining today</div>
+    <section class="court-pulse-section">
+        <div class="court-pulse-panel">
+            <div class="row g-4 justify-content-center">
+
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="pulse-card">
+                        <div class="pulse-icon">
+                            <i class="bi bi-grid-3x3-gap"></i>
+                        </div>
+                        <div class="pulse-title">Courts Available</div>
+                        <div class="pulse-value">8 Courts Ready</div>
+                        <div class="pulse-sub">Badminton and pickleball courts available for reservation.</div>
+                    </div>
                 </div>
-            </div>
-            <div class="col-12 col-sm-6 col-lg-3">
-                <div class="pulse-card">
-                    <div class="pulse-title">Court 2 Status</div>
-                    <div class="pulse-value"><span class="pulse-dot pulse-yellow"></span> Filling Fast</div>
-                    <div class="pulse-sub">Only 1 slot left after 5 PM</div>
+
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="pulse-card">
+                        <div class="pulse-icon">
+                            <i class="bi bi-bag-check"></i>
+                        </div>
+                        <div class="pulse-title">Racket &amp; Paddle Rental</div>
+                        <div class="pulse-value">Starts at ₱50</div>
+                        <div class="pulse-sub">Rent rackets and paddles at the front desk inside the court.</div>
+                    </div>
                 </div>
-            </div>
-            <div class="col-12 col-sm-6 col-lg-3">
-                <div class="pulse-card">
-                    <div class="pulse-title">Peak Hours</div>
-                    <div class="pulse-value"><span class="pulse-dot pulse-red"></span> High Demand</div>
-                    <div class="pulse-sub">6 PM – 8 PM is 85% booked</div>
+
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="pulse-card">
+                        <div class="pulse-icon">
+                            <i class="bi bi-trophy"></i>
+                        </div>
+                        <div class="pulse-title">Club Tournament</div>
+                        <div class="pulse-value">Every Sunday</div>
+                        <div class="pulse-sub">Join weekly matches, compete with players, and win exciting prizes.</div>
+                    </div>
                 </div>
-            </div>
-            <div class="col-12 col-sm-6 col-lg-3">
-                <div class="pulse-card">
-                    <div class="pulse-title"> Pro Tip</div>
-                    <div class="pulse-value">Weekday Mornings</div>
-                    <div class="pulse-sub">40% less crowded, same great courts</div>
+
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="pulse-card">
+                        <div class="pulse-icon">
+                            <i class="bi bi-gift"></i>
+                        </div>
+                        <div class="pulse-title">Promo</div>
+                        <div class="pulse-value">Free Shuttlecock/Ball</div>
+                        <div class="pulse-sub">Get a free shuttlecock or ball for every confirmed court booking.</div>
+                    </div>
                 </div>
+
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
 
 
@@ -659,105 +950,6 @@
         </div>
     </section>
 
-
-        <!-- Meet Our Team -->
-    <section class="team-section py-5">
-        <div class="container-xl">
-            <div class="text-center mb-5" style="max-width: 640px; margin-left: auto; margin-right: auto;">
-                <h2 class="fw-bold mb-2" style="color: var(--foreground); font-size: 1.875rem;">
-                    Meet Our Team
-                </h2>
-                <p class="mb-0" style="color: var(--muted-foreground);">
-                    A small crew passionate about drinking, yet somehow managed to get into sports.
-                </p>
-            </div>
-
-            <div class="row g-4 justify-content-center">
-                <!-- Member 1 -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="team-card h-100">
-                        <div class="team-card-accent"></div>
-                        <div class="team-avatar-wrapper">
-                            <!-- Replace src with your PNG: e.g., /images/team/rav-symon.png -->
-                            <img src="https://ui-avatars.com/api/?name=Rav+Symon&background=2563EB&color=fff&size=150" 
-                                 alt="Rav Symon Arroyo" class="team-avatar" />
-                        </div>
-                        <div class="team-card-body">
-                            <div class="team-name">Rav Symon Arroyo</div>
-                            <div class="team-role">Project Manager / Developer</div>
-                            <p class="team-bio">My hobbies include closing tabs I might need later and then immediately regretting it.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Member 2 -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="team-card h-100">
-                        <div class="team-card-accent"></div>
-                        <div class="team-avatar-wrapper">
-                            <img src="https://ui-avatars.com/api/?name=Eleazer+Cellona&background=2563EB&color=fff&size=150" 
-                                 alt="Eleazer Cellona" class="team-avatar" />
-                        </div>
-                        <div class="team-card-body">
-                            <div class="team-name">Eleazer Cellona</div>
-                            <div class="team-role">Developer</div>
-                            <p class="team-bio">Turning caffeine into code, one bug at a time.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Member 3 -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="team-card h-100">
-                        <div class="team-card-accent"></div>
-                        <div class="team-avatar-wrapper">
-                            <img src="https://ui-avatars.com/api/?name=Micaela+Depaur&background=2563EB&color=fff&size=150" 
-                                 alt="Micaela Depaur" class="team-avatar" />
-                        </div>
-                        <div class="team-card-body">
-                            <div class="team-name">Micaela Depaur</div>
-                            <div class="team-role">UI/UX Designer</div>
-                            <p class="team-bio">Obsessed with whitespace, alignment, and making things look effortless.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Member 4 -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="team-card h-100">
-                        <div class="team-card-accent"></div>
-                        <div class="team-avatar-wrapper">
-                            <img src="https://ui-avatars.com/api/?name=Kyle+Justine+Tongson&background=2563EB&color=fff&size=150" 
-                                 alt="Kyle Justine Tongson" class="team-avatar" />
-                        </div>
-                        <div class="team-card-body">
-                            <div class="team-name">Kyle Justine Tongson</div>
-                            <div class="team-role">Developer</div>
-                            <p class="team-bio">Debugging is like being a detective in a crime movie where you are also the murderer.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Member 5 -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="team-card h-100">
-                        <div class="team-card-accent"></div>
-                        <div class="team-avatar-wrapper">
-                            <img src="https://ui-avatars.com/api/?name=Weenz+Jay+Virrey&background=2563EB&color=fff&size=150" 
-                                 alt="Weenz Jay Virrey" class="team-avatar" />
-                        </div>
-                        <div class="team-card-body">
-                            <div class="team-name">Weenz Jay Virrey</div>
-                            <div class="team-role">Developer</div>
-                            <p class="team-bio">Building features that work, and occasionally breaking them for fun.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-       
     <!-- Testimonials Section -->
     <section class="testimonials-section py-5">
         <div class="container-xl">
@@ -782,9 +974,11 @@
                             "Finally, a way to book a court without arguing with 5 other people in the GC. I just click, pay, and show up. 10/10 would recommend to my friends who are always late."
                         </p>
                         <div class="testi-author">
-                            <div class="testi-avatar-sm">JD</div>
+                            <div class="testi-avatar-sm">
+                                <img src="~/images/testimonials/PlayerSays1.png" alt="Juan Cruz" />
+                            </div>
                             <div>
-                                <div class="testi-name">Juan Dela Cruz</div>
+                                <div class="testi-name">Juan Cruz</div>
                                 <div class="testi-role">Weekly Regular</div>
                             </div>
                         </div>
@@ -802,7 +996,9 @@
                             "The UI is so clean I forgot I was sweating while using it. Also, love that I can see available slots instantly instead of calling the admin every 5 minutes."
                         </p>
                         <div class="testi-author">
-                            <div class="testi-avatar-sm">MS</div>
+                            <div class="testi-avatar-sm">
+                                <img src="~/images/testimonials/PlayerSays3.png" alt="Juan Dela Cruz" />
+                            </div>
                             <div>
                                 <div class="testi-name">Maria Santos</div>
                                 <div class="testi-role">Pickleball Enthusiast</div>
@@ -822,9 +1018,11 @@
                             "Booked a court at 2 AM for a 10 AM game. Smooth experience. Only wish they added a feature to automatically mute my opponent when they miss a shot."
                         </p>
                         <div class="testi-author">
-                            <div class="testi-avatar-sm">KT</div>
+                            <div class="testi-avatar-sm">
+                                <img src="~/images/testimonials/PlayerSays2.png" alt="Ken Thompson" />
+                            </div>
                             <div>
-                                <div class="testi-name">Ken T.</div>
+                                <div class="testi-name">Ken Thompson</div>
                                 <div class="testi-role">Casual Player</div>
                             </div>
                         </div>
@@ -834,53 +1032,149 @@
         </div>
     </section>
 
-<section class="unwritten-rules" aria-labelledby="rules-heading">
-    <h2 id="rules-heading">Unwritten Rules of Our Team</h2>
-    
-    <div class="rules-grid">
-        <!-- Rule 1 -->
-        <article class="rule-card">
-            <img src="~/images/rules/collaboration.webp" 
-                 alt="Team members collaborating around a whiteboard" 
-                 class="rule-image" 
-                 width="400" height="260" 
-                 loading="lazy" decoding="async">
-            <div class="rule-content">
-                <span class="rule-badge">01</span>
-                <h3>Assume Positive Intent</h3>
-                <p>Start every conversation believing everyone is trying their best. It changes how you listen, respond, and build trust.</p>
+    <!-- Meet Our Team -->
+    <section class="team-section py-5">
+        <div class="container-xl">
+            <div class="text-center mb-5" style="max-width: 640px; margin-left: auto; margin-right: auto;">
+                <h2 class="fw-bold mb-2" style="color: var(--foreground); font-size: 1.875rem;">
+                    Meet Our Team
+                </h2>
+                <p class="mb-0" style="color: var(--muted-foreground);">
+                    A small crew passionate about drinking, yet somehow managed to get into sports.
+                </p>
             </div>
-        </article>
 
-        <!-- Rule 2 -->
-        <article class="rule-card">
-            <img src="~/images/rules/communication.webp" 
-                 alt="Two colleagues having a focused one-on-one conversation" 
-                 class="rule-image" 
-                 width="400" height="260" 
-                 loading="lazy" decoding="async">
-            <div class="rule-content">
-                <span class="rule-badge">02</span>
-                <h3>Default to Transparency</h3>
-                <p>Share context, not just conclusions. When people understand the "why," they make better decisions without asking permission.</p>
-            </div>
-        </article>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-5 g-4 justify-content-center">
+                <!-- Member 1 -->
+                <div class="col">
+                    <div class="team-card h-100">
+                        <div class="team-card-accent"></div>
+                        <div class="team-avatar-wrapper">
+                            <img src="~/images/members/SymonArroyo.png"
+                                 alt="Rav Symon Arroyo" class="team-avatar" />
+                        </div>
+                        <div class="team-card-body">
+                            <div class="team-name">Rav Symon Arroyo</div>
+                            <div class="team-role">Project Manager / Developer</div>
+                            <p class="team-bio">My hobbies include closing tabs I might need later and then immediately regretting it.</p>
+                        </div>
+                    </div>
+                </div>
 
-        <!-- Rule 3 -->
-        <article class="rule-card">
-            <img src="~/images/rules/ownership.webp" 
-                 alt="Person taking notes while reviewing project metrics" 
-                 class="rule-image" 
-                 width="400" height="260" 
-                 loading="lazy" decoding="async">
-            <div class="rule-content">
-                <span class="rule-badge">03</span>
-                <h3>Own the Gap</h3>
-                <p>If something falls between roles, step into it. Flag it, fix it, or delegate it clearly. "Not my job" kills momentum.</p>
+                <!-- Member 2 -->
+                <div class="col">
+                    <div class="team-card h-100">
+                        <div class="team-card-accent"></div>
+                        <div class="team-avatar-wrapper">
+                            <img src="~/images/members/EleazerCellona.png"
+                                 alt="Eleazer Cellona" class="team-avatar" />
+                        </div>
+                        <div class="team-card-body">
+                            <div class="team-name">Eleazer Cellona</div>
+                            <div class="team-role">Developer</div>
+                            <p class="team-bio">Turning caffeine into code, one bug at a time.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Member 3 -->
+                <div class="col">
+                    <div class="team-card h-100">
+                        <div class="team-card-accent"></div>
+                        <div class="team-avatar-wrapper">
+                            <img src="~/images/members/MicaelaDepaur.png"
+                                 alt="Micaela Depaur" class="team-avatar" />
+                        </div>
+                        <div class="team-card-body">
+                            <div class="team-name">Micaela Depaur</div>
+                            <div class="team-role">UI/UX Designer</div>
+                            <p class="team-bio">Obsessed with whitespace, alignment, and making things look effortless.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Member 4 -->
+                <div class="col">
+                    <div class="team-card h-100">
+                        <div class="team-card-accent"></div>
+                        <div class="team-avatar-wrapper">
+                            <img src="~/images/members/KyleTongson.png"
+                                 alt="Kyle Justine Tongson" class="team-avatar" />
+                        </div>
+                        <div class="team-card-body">
+                            <div class="team-name">Kyle Justine Tongson</div>
+                            <div class="team-role">Developer</div>
+                            <p class="team-bio">Debugging is like being a detective in a crime movie where you are also the murderer.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Member 5 -->
+                <div class="col">
+                    <div class="team-card h-100">
+                        <div class="team-card-accent"></div>
+                        <div class="team-avatar-wrapper">
+                            <img src="~/images/members/WeenzVirrey.png"
+                                 alt="Weenz Jay Virrey" class="team-avatar" />
+                        </div>
+                        <div class="team-card-body">
+                            <div class="team-name">Weenz Jay Virrey</div>
+                            <div class="team-role">Developer</div>
+                            <p class="team-bio">Building features that work, and occasionally breaking them for fun.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </article>
-    </div>
-</section>
+        </div>
+    </section>
+
+    <section class="unwritten-rules" aria-labelledby="rules-heading">
+        <h2 id="rules-heading">Unwritten Rules of Our Team</h2>
+
+        <div class="rules-grid">
+            <!-- Rule 1 -->
+            <article class="rule-card">
+                <img src="~/images/rules/UnwrittenOne.png"
+                     alt="Team members collaborating around a whiteboard"
+                     class="rule-image"
+                     width="400" height="260"
+                     loading="lazy" decoding="async">
+                <div class="rule-content">
+                    <span class="rule-badge">01</span>
+                    <h3>Assume Positive Intent</h3>
+                    <p>Start every conversation believing everyone is trying their best. It changes how you listen, respond, and build trust.</p>
+                </div>
+            </article>
+
+            <!-- Rule 2 -->
+            <article class="rule-card">
+                <img src="~/images/rules/UnwrittenTwo.png"
+                     alt="Two colleagues having a focused one-on-one conversation"
+                     class="rule-image"
+                     width="400" height="260"
+                     loading="lazy" decoding="async">
+                <div class="rule-content">
+                    <span class="rule-badge">02</span>
+                    <h3>Default to Transparency</h3>
+                    <p>Share context, not just conclusions. When people understand the "why," they make better decisions without asking permission.</p>
+                </div>
+            </article>
+
+            <!-- Rule 3 -->
+            <article class="rule-card">
+                <img src="~/images/rules/UnwrittenThree.png"
+                     alt="Person taking notes while reviewing project metrics"
+                     class="rule-image"
+                     width="400" height="260"
+                     loading="lazy" decoding="async">
+                <div class="rule-content">
+                    <span class="rule-badge">03</span>
+                    <h3>Own the Gap</h3>
+                    <p>If something falls between roles, step into it. Flag it, fix it, or delegate it clearly. "Not my job" kills momentum.</p>
+                </div>
+            </article>
+        </div>
+    </section>
 
 
     <!-- Footer -->
@@ -889,9 +1183,10 @@
         <div class="mx-auto" style="max-width: 960px;">
             <div class="d-flex flex-column flex-sm-row align-items-center justify-content-between gap-3">
                 <div class="d-flex align-items-center gap-2">
-                    <div class="d-flex align-items-center justify-content-center rounded-2 p-1"
-                         style="background-color: var(--primary);">
-                        <i class="bi bi-trophy-fill text-white" style="font-size: 0.875rem;"></i>
+                    <div class="d-flex align-items-center justify-content-center rounded-2 p-2" ;">
+                        <img src="~/images/CourtBookLogo.png"
+                             alt="CourtBook Logo"
+                             style="height: 50px; width: auto;" />
                     </div>
                     <span class="fw-bold" style="color: var(--foreground);">CourtBook</span>
                 </div>
